@@ -34,7 +34,7 @@ const HistIc = p => <I s={p.s} c={p.c} d={<><circle cx={12} cy={12} r={10}/><pol
 
 /* ═══ SHARED UI ═══ */
 const Card = ({ children, style, redBlue }) => <div style={{ background: B.white, border: `1px solid ${redBlue ? B.blueBd : B.g200}`, borderRadius: "14px", padding: "20px", boxShadow: B.sh, ...style }}>{children}</div>;
-const SevPill = ({ sev }) => { const m = { Critical: [B.redBg, B.red, B.redBd], High: [B.blueBg, B.blue, B.blueBd], Moderate: [B.ynBg, B.ynT, B.ynBd] }; const [bg, c, bd] = m[sev] || m.Moderate; return <span style={{ fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: "6px", background: bg, color: c, border: `1px solid ${bd}` }}>{sev}</span>; };
+const SevPill = ({ sev }) => { const m = { Critical: [B.redBg, B.red, B.redBd], Major: [B.blueBg, B.blue, B.blueBd], Moderate: [B.ynBg, B.ynT, B.ynBd], Minor: [B.g100, B.g500, B.g300], High: [B.blueBg, B.blue, B.blueBd] }; const [bg, c, bd] = m[sev] || m.Moderate; return <span style={{ fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: "6px", background: bg, color: c, border: `1px solid ${bd}` }}>{sev}</span>; };
 const SPill = ({ children, v }) => { const m = { ok: [B.okBg, B.ok, B.okBd], yn: [B.ynBg, B.ynT, B.ynBd], red: [B.redBg, B.red, B.redBd] }; const [bg, c, bd] = m[v] || m.yn; return <span style={{ fontSize: "11px", fontWeight: 600, padding: "3px 10px", borderRadius: "6px", background: bg, color: c, border: `1px solid ${bd}` }}>{children}</span>; };
 const Btn = ({ children, onClick, red, secondary, style }) => <button onClick={onClick} style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "12px 24px", borderRadius: "10px", fontSize: "14px", fontWeight: 600, border: secondary ? `1px solid ${B.g200}` : "none", background: secondary ? B.white : red ? B.red : B.blue, color: secondary ? B.g700 : B.white, cursor: "pointer", boxShadow: secondary ? "none" : B.sh, ...style }}>{children}</button>;
 const PBar = ({ v, c }) => <div style={{ width: "100%", height: "6px", background: B.g100, borderRadius: "3px", overflow: "hidden" }}><div style={{ width: v + "%", height: "100%", background: c, borderRadius: "3px", transition: "width 0.8s ease" }} /></div>;
@@ -133,14 +133,29 @@ const BroncoModel = ({ activeRisk, onSpotClick }) => {
     const sh = new THREE.Mesh(shG,shM); sh.rotation.x=-Math.PI/2; sh.position.set(0,-0.01,0); sh.scale.set(1.5,1,1);
     scene.add(sh);
 
-    /* Hotspot positions (in model space, will be adjusted after loading) */
+    /* Hotspot positions — aligned to mechanical zones */
     const hotspots = [
-      {id:0, pos:new THREE.Vector3(0,0.82,1.54), color:"#F83C50", label:"Head Gasket"},
-      {id:1, pos:new THREE.Vector3(-0.38,0.60,1.54), color:"#F83C50", label:"Fuel Injector"},
-      {id:2, pos:new THREE.Vector3(-0.48,0.48,1.10), color:"#2d11ad", label:"Water Pump"},
-      {id:3, pos:new THREE.Vector3(0.62,0.68,-0.35), color:"#2d11ad", label:"Battery/BCM"},
-      {id:4, pos:new THREE.Vector3(0,0.34,-1.32), color:"#FFC72C", label:"Rear Drive"},
-      {id:5, pos:new THREE.Vector3(0,1.48,0.65), color:"#FFC72C", label:"Windshield"},
+      /* Engine Bay (Front Upper) */
+      {id:0,  pos:new THREE.Vector3(0.15,0.85,1.55),  color:"#F83C50"},  // Engine Coolant Intrusion
+      {id:2,  pos:new THREE.Vector3(-0.25,0.72,1.60),  color:"#F83C50"},  // Turbocharger
+      {id:3,  pos:new THREE.Vector3(0.35,0.65,1.50),   color:"#F83C50"},  // Fuel Injector
+      {id:6,  pos:new THREE.Vector3(-0.40,0.55,1.20),  color:"#2d11ad"},  // Water Pump
+      {id:14, pos:new THREE.Vector3(0.55,0.60,1.30),   color:"#6B7280"},  // 12V Battery
+      {id:15, pos:new THREE.Vector3(-0.15,0.95,1.35),  color:"#6B7280"},  // Filters
+      /* Front Lower Drivetrain */
+      {id:1,  pos:new THREE.Vector3(0,0.30,1.15),      color:"#F83C50"},  // Transmission
+      {id:8,  pos:new THREE.Vector3(0,0.25,0.75),      color:"#FFC72C"},  // Shift Calibration
+      /* Rear Undercarriage */
+      {id:4,  pos:new THREE.Vector3(0,0.32,-1.30),     color:"#2d11ad"},  // Rear Drive Unit
+      {id:9,  pos:new THREE.Vector3(0.25,0.28,-1.10),  color:"#FFC72C"},  // EVAP Purge
+      /* Front Wheel Corners */
+      {id:10, pos:new THREE.Vector3(-0.78,0.38,0.90),  color:"#FFC72C"},  // Suspension
+      {id:11, pos:new THREE.Vector3(0.78,0.32,0.90),   color:"#FFC72C"},  // Brake Wear
+      {id:13, pos:new THREE.Vector3(-0.72,0.55,1.10),  color:"#6B7280"},  // Driver Assist Sensor
+      /* Dash / Interior Zone */
+      {id:7,  pos:new THREE.Vector3(0.50,0.72,-0.20),  color:"#2d11ad"},  // BCM Voltage
+      {id:5,  pos:new THREE.Vector3(-0.35,0.68,0.30),  color:"#2d11ad"},  // Steering Rack
+      {id:12, pos:new THREE.Vector3(0,1.10,0.40),      color:"#6B7280"},  // SYNC Infotainment
     ];
 
     /* Load and display model */
@@ -241,16 +256,17 @@ const BroncoModel = ({ activeRisk, onSpotClick }) => {
       {!loading && hsp.filter(h=>h.visible).map(h=>(
         <button key={h.id} onClick={()=>onSpotClick?.(h.id)} style={{
           position:"absolute",left:h.sx+"px",top:h.sy+"px",transform:"translate(-50%,-50%)",
-          width:activeRisk===h.id?28:18,height:activeRisk===h.id?28:18,borderRadius:"50%",
-          border:`1.5px solid ${h.color}`,background:activeRisk===h.id?h.color+"20":"rgba(255,255,255,0.45)",
+          width:activeRisk===h.id?20:12,height:activeRisk===h.id?20:12,borderRadius:"50%",
+          border:`1px solid ${h.color}`,background:activeRisk===h.id?h.color+"25":"rgba(255,255,255,0.35)",
           cursor:"pointer",transition:"all 0.3s ease",display:"flex",alignItems:"center",justifyContent:"center",
-          boxShadow:`0 0 10px ${h.color}35`,zIndex:10,
-        }}><div style={{width:activeRisk===h.id?7:4,height:activeRisk===h.id?7:4,borderRadius:"50%",background:h.color}}/></button>
+          boxShadow:`0 0 6px ${h.color}25`,zIndex:10,
+        }}><div style={{width:activeRisk===h.id?5:3,height:activeRisk===h.id?5:3,borderRadius:"50%",background:h.color}}/></button>
       ))}
-      <div style={{display:"flex",justifyContent:"center",gap:"16px",marginTop:"10px"}}>
+      <div style={{display:"flex",justifyContent:"center",gap:"14px",marginTop:"10px"}}>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.red}/> Critical</div>
-        <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.blue}/> High</div>
+        <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.blue}/> Major</div>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c="#FFC72C"/> Moderate</div>
+        <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.g500}/> Minor</div>
       </div>
       <div style={{textAlign:"center",marginTop:"6px",fontSize:"11px",color:B.g500}}>Drag to rotate • Click hotspots to inspect • Auto-rotates</div>
       <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
@@ -260,12 +276,26 @@ const BroncoModel = ({ activeRisk, onSpotClick }) => {
 
 /* ═══ RISK DATA ═══ */
 const risks = [
-  { id: 0, sev: "Critical", Icon: Tri, c: B.red, t: "Head Gasket Failure", why: "Documented failure pattern in 2021–2024 1.5L EcoBoost. Cylinder 2–3 breach under load is most common. Often manifests as white exhaust after sustained highway driving or coolant loss without visible leak.", cost: "$2,800 – $4,200", focus: ["Check coolant reservoir level and color — milky = contaminated", "Look for white residue around oil cap", "Run engine to operating temp, watch for white smoke on rev"], ev: "NHTSA Complaints + TSB 23-2346" },
-  { id: 1, sev: "Critical", Icon: Tri, c: B.red, t: "Fuel Injector Leak", why: "Known failure pattern in 2021–2024 MY 1.5L EcoBoost. Injectors develop micro-cracks at the O-ring seat, causing fuel seepage onto the manifold. Multiple NHTSA complaints cite fire risk.", cost: "$600 – $1,100", focus: ["Smell for raw fuel at cold start", "Inspect injector rail for wet spots or staining", "Check for fuel residue on intake manifold"], ev: "NHTSA Complaints + TSB Data" },
-  { id: 2, sev: "High", Icon: Circ, c: B.blue, t: "Water Pump Premature Failure", why: "Most-reported issue on NHTSA for this model year. Internal bearing fails between 18K–35K miles, causing coolant leak from weep hole. Often misdiagnosed as head gasket.", cost: "$900 – $1,400", focus: ["Look for dried coolant trail below water pump weep hole", "Check for bearing play — grab pulley and wiggle", "Listen for grinding noise at idle with hood open"], ev: "NHTSA Complaints (142 reports)" },
-  { id: 3, sev: "High", Icon: Circ, c: B.blue, t: "12V Battery / BCM Defect", why: "Widespread reports of Body Control Module software causing parasitic drain. Battery found dead after 2–3 days of sitting. BCM reflash required; some units need hardware replacement.", cost: "$150 – $1,800", focus: ["Ask seller about jump-starts or dead battery events", "Check battery date code — original = likely affected", "Verify BCM software version at dealer"], ev: "NHTSA Complaints (87 reports)" },
-  { id: 4, sev: "Moderate", Icon: Wrench, c: B.black, t: "Rear Drive Unit Noise", why: "Grinding or whining from rear differential during low-speed turns. AWD clutch pack wear issue. Not safety-critical but expensive if it progresses to full unit replacement.", cost: "$400 – $2,200", focus: ["Drive slow figure-8s in parking lot — listen for grinding", "Check rear diff fluid level and condition", "Test AWD engagement on loose surface"], ev: "Owner Forums + TSB Reference" },
-  { id: 5, sev: "Moderate", Icon: Eye, c: B.black, t: "Windshield Stress Crack", why: "Higher-than-normal windshield replacement rate reported. Cracks initiate from edge seal stress, often near A-pillar base. May be related to body flex or seal adhesive issue.", cost: "$350 – $600", focus: ["Inspect all edges of windshield for hairline cracks", "Check for prior replacement signs (new vs. weathered seal)", "Look at A-pillar base corners closely"], ev: "Consumer Reports + Forums" },
+  /* Level 1 — Critical */
+  { id: 0, sev: "Critical", Icon: Tri, c: B.red, t: "Engine Coolant Intrusion Risk", cost: "$2,800 – $4,500+", what: "The 1.5L EcoBoost in 2021–2024 Bronco Sport models has a documented pattern of cylinder head gasket degradation, allowing coolant to enter combustion chambers or the oil system.", why: "Coolant intrusion can cause progressive internal engine damage. If undetected, it may lead to overheating, bearing failure, or complete engine replacement.", symptoms: ["White exhaust smoke under sustained load", "Coolant reservoir level dropping without visible leak", "Milky residue on oil filler cap or dipstick", "Sweet smell from exhaust or engine bay"] },
+  { id: 1, sev: "Critical", Icon: Tri, c: B.red, t: "Internal Transmission Failure Risk", cost: "$3,000 – $5,500", what: "The 8-speed automatic transmission paired with the 1.5L EcoBoost has reported cases of internal clutch pack failure, torque converter shudder, and valve body malfunction in early production units.", why: "Transmission failure is one of the highest-cost repairs on this platform. Intermittent symptoms can mask progressive internal wear that leads to complete unit replacement.", symptoms: ["Harsh or delayed shifts between 2nd and 4th gear", "Shudder or vibration at highway speed under light throttle", "Transmission warning light or limp mode activation", "Fluid discoloration or burnt odor on dipstick"] },
+  { id: 2, sev: "Critical", Icon: Tri, c: B.red, t: "Turbocharger System Failure", cost: "$1,800 – $2,800", what: "The low-displacement turbo on the 1.5L EcoBoost operates at high boost pressure relative to engine size. Bearing wear, wastegate actuator failure, and boost leaks have been reported across the platform.", why: "Turbocharger failure results in significant power loss, potential oil contamination, and can cause cascading damage to the intake and exhaust systems if debris enters the engine.", symptoms: ["Whining or siren-like noise during acceleration", "Noticeable loss of power or boost lag", "Oil residue around turbo inlet or intercooler piping", "Check engine light with boost-related codes"] },
+  { id: 3, sev: "Critical", Icon: Tri, c: B.red, t: "Fuel Injector Leak Risk", cost: "$600 – $1,100", what: "Direct-injection fuel injectors on the 1.5L EcoBoost have shown a failure pattern involving O-ring degradation and micro-cracking at the injector seat, allowing fuel seepage onto the intake manifold.", why: "Fuel leaks near the engine create a fire risk and can affect fuel trim, combustion efficiency, and emissions compliance. This is a known platform exposure with multiple NHTSA complaints.", symptoms: ["Raw fuel smell at cold start or under hood", "Visible wet spots or staining near injector rail", "Rough idle or intermittent misfire codes", "Fuel residue on intake manifold surface"] },
+  /* Level 2 — Major */
+  { id: 4, sev: "Major", Icon: Circ, c: B.blue, t: "Rear Drive Unit Failure", cost: "$1,200 – $2,000", what: "The rear drive unit (PTU/RDU) in AWD Bronco Sport models has reported premature clutch pack wear and bearing noise, particularly in vehicles driven frequently in low-speed turning situations.", why: "Rear drive unit failure disables AWD functionality and produces audible symptoms that reduce retail confidence. Full unit replacement is common when internal components are worn.", symptoms: ["Grinding or whining noise during low-speed turns", "Vibration from rear axle area during acceleration", "AWD malfunction indicator on dashboard", "Metallic particles visible in rear differential fluid"] },
+  { id: 5, sev: "Major", Icon: Circ, c: B.blue, t: "Electric Steering Rack Fault", cost: "$1,200 – $2,000", what: "The electric power steering system on this platform has reported instances of assist motor failure, torque sensor drift, and steering rack internal wear leading to inconsistent steering feel.", why: "Steering system faults are safety-relevant and affect drivability. Intermittent assist loss or uneven steering effort can surface under specific driving conditions and worsen over time.", symptoms: ["Momentary steering assist loss or heaviness", "Steering pulls to one side without alignment cause", "Clunking or binding sensation when turning at low speed", "Power steering warning light illumination"] },
+  { id: 6, sev: "Major", Icon: Circ, c: B.blue, t: "Water Pump Cooling Failure", cost: "$900 – $1,400", what: "The water pump on the 1.5L EcoBoost has a documented failure pattern involving internal bearing degradation and weep hole leakage, typically between 18K and 35K miles.", why: "Water pump failure leads to coolant loss and overheating. Because symptoms overlap with head gasket issues, misdiagnosis is common — increasing the risk of delayed or incorrect repair.", symptoms: ["Dried coolant trail below water pump weep hole", "Engine temperature gauge running higher than normal", "Grinding noise from front of engine at idle", "Coolant puddle under vehicle after parking"] },
+  { id: 7, sev: "Major", Icon: Circ, c: B.blue, t: "Battery / BCM Voltage Instability", cost: "$150 – $1,800", what: "The Body Control Module (BCM) in 2021–2024 Bronco Sport models has a known software condition that causes parasitic battery drain, leading to dead batteries after 2–3 days of inactivity.", why: "Voltage instability affects all vehicle electronics and can trigger cascading fault codes. BCM reflash is the first-line fix, but some units require hardware replacement at significantly higher cost.", symptoms: ["Dead battery after sitting 2–3 days unused", "Intermittent electrical glitches or warning lights", "Slow cranking or failure to start", "Battery date code indicating original unit still installed"] },
+  /* Level 3 — Moderate */
+  { id: 8, sev: "Moderate", Icon: Wrench, c: B.black, t: "Transmission Shift Calibration", cost: "$0 – $1,200", what: "Some 2021–2024 Bronco Sport units exhibit rough or hesitant shifting behavior that may be related to adaptive transmission calibration drift or software revision gaps.", why: "Shift quality issues reduce driving refinement and can indicate early signs of internal transmission wear. In many cases, a TCM recalibration or software update resolves the behavior.", symptoms: ["Rough or jerky shifts at low speed", "Hesitation between gear changes during acceleration", "Occasional gear hunting on inclines", "Shift behavior that changes with temperature"] },
+  { id: 9, sev: "Moderate", Icon: Wrench, c: B.black, t: "EVAP Purge System Fault", cost: "$250 – $600", what: "The evaporative emissions (EVAP) purge valve and associated hoses on this platform have shown a failure pattern that triggers check engine lights and emissions non-compliance.", why: "EVAP faults cause emissions test failures and can affect fuel system vapor management. While not a drivability concern, unresolved codes complicate resale and dealer certification.", symptoms: ["Check engine light with P0441 or P0455 codes", "Fuel smell near the rear of the vehicle", "Difficulty at fuel pump — nozzle clicks off repeatedly", "Hissing sound from engine bay when opening fuel cap"] },
+  { id: 10, sev: "Moderate", Icon: Wrench, c: B.black, t: "Front or Rear Suspension Wear", cost: "$400 – $900", what: "Bronco Sport suspension components, particularly front strut mounts and rear shock absorbers, show accelerated wear in vehicles used on mixed-surface roads or in regions with poor pavement.", why: "Worn suspension reduces ride quality, affects tire wear patterns, and can mask alignment issues. Components typically degrade progressively, making inspection timing important.", symptoms: ["Clunking noise over bumps from front or rear", "Uneven tire wear on front axle", "Vehicle feels loose or floaty at highway speed", "Visible oil weeping on shock absorber body"] },
+  { id: 11, sev: "Moderate", Icon: Wrench, c: B.black, t: "Brake Pad and Rotor Wear", cost: "$300 – $800", what: "Bronco Sport models in the 20K–30K mile range commonly show accelerated front brake wear due to vehicle weight distribution and regenerative braking calibration on AWD variants.", why: "Brake wear at inspection is a standard cost consideration. Premature wear indicates potential caliper or rotor issues that affect reconditioning estimates.", symptoms: ["Squealing or grinding noise during braking", "Vibration or pulsation in brake pedal", "Visible rotor scoring or uneven pad thickness", "Increased stopping distance compared to expected"] },
+  /* Level 4 — Minor */
+  { id: 12, sev: "Minor", Icon: Eye, c: B.g500, t: "SYNC Infotainment Instability", cost: "$0 – $900", what: "The SYNC 3 and SYNC 4 infotainment systems in Bronco Sport models have reported software instability including screen freezes, Bluetooth disconnects, and navigation system lag.", why: "Infotainment issues affect perceived quality and customer satisfaction. Most are resolved via software update, but hardware failures (APIM module) require component replacement.", symptoms: ["Touchscreen freezes or becomes unresponsive", "Bluetooth audio drops or fails to reconnect", "Backup camera display lag or black screen", "System reboot cycle during driving"] },
+  { id: 13, sev: "Minor", Icon: Eye, c: B.g500, t: "Driver Assist Sensor Malfunction", cost: "$150 – $500", what: "Forward-facing camera, radar sensors, and blind-spot monitoring modules on this platform can lose calibration or produce false alerts due to sensor contamination or mounting shift.", why: "ADAS sensor faults disable safety features and trigger dashboard warnings. Recalibration is typically required after windshield replacement or front-end work.", symptoms: ["Pre-collision warning activating without cause", "Blind-spot monitor light staying illuminated", "Adaptive cruise control becoming unavailable", "Calibration warning message on instrument cluster"] },
+  { id: 14, sev: "Minor", Icon: Eye, c: B.g500, t: "Standard 12V Battery Replacement", cost: "$150 – $350", what: "The factory 12V battery in 2021–2024 Bronco Sport models has a typical service life of 3–4 years. Vehicles approaching this window may require proactive replacement, particularly in extreme climates.", why: "Battery replacement is a routine maintenance item, but it affects acquisition cost calculations. Original batteries nearing end-of-life should be factored into reconditioning estimates.", symptoms: ["Slow engine cranking at startup", "Battery age exceeding 3 years on date code", "Low voltage warning on dashboard", "Electrical accessories dimming at idle"] },
+  { id: 15, sev: "Minor", Icon: Eye, c: B.g500, t: "Cabin or Engine Filter Service", cost: "$50 – $200", what: "Cabin air filter and engine air filter service intervals on the Bronco Sport are typically 15K–20K miles. Vehicles in dusty or high-pollen environments may require earlier replacement.", why: "Filter condition is a minor but visible indicator of maintenance history. Clogged filters can affect HVAC performance and engine efficiency, and are easily inspected during acquisition.", symptoms: ["Reduced airflow from cabin vents", "Musty odor from HVAC system", "Visible debris or discoloration on filter media", "Slight decrease in fuel efficiency"] },
 ];
 
 /* ═══ PAGE 0: INTRO ═══ */
@@ -342,11 +372,24 @@ const P1 = () => {
 };
 
 /* ═══ PAGE 2: PRE-INSPECTION INTELLIGENCE ═══ */
+const sevBorder = (sev, active) => {
+  if (!active) return B.g200;
+  if (sev === "Critical") return B.redBd;
+  if (sev === "Major") return B.blueBd;
+  if (sev === "Moderate") return B.ynBd;
+  return B.g300;
+};
+const tierGroups = [
+  { label: "Level 1 — Critical", sev: "Critical", ids: [0,1,2,3] },
+  { label: "Level 2 — Major", sev: "Major", ids: [4,5,6,7] },
+  { label: "Level 3 — Moderate", sev: "Moderate", ids: [8,9,10,11] },
+  { label: "Level 4 — Minor", sev: "Minor", ids: [12,13,14,15] },
+];
 const P2 = () => {
   const [sel, setSel] = useState(-1);
   const [rev, setRev] = useState(0);
   useEffect(() => {
-    const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 300 + i * 300));
+    const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
     return () => t.forEach(clearTimeout);
   }, []);
   return (
@@ -359,39 +402,50 @@ const P2 = () => {
             <BroncoModel activeRisk={sel} onSpotClick={(i) => setSel(i === sel ? -1 : i)} />
           </Card>
         </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "8px" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
           <Card style={{ padding: "14px 18px", background: "#4B5563", borderColor: "#6B7280", color: B.white }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
-              <span style={{ fontSize: "14px", fontWeight: 700, color: B.white }}>6 Risk Areas Identified</span>
-              <div style={{ display: "flex", gap: "6px", marginLeft: "auto" }}><SevPill sev="Critical" /><SevPill sev="High" /><SevPill sev="Moderate" /></div>
+              <span style={{ fontSize: "14px", fontWeight: 700, color: B.white }}>16 Risk Areas Identified</span>
+              <div style={{ display: "flex", gap: "6px", marginLeft: "auto" }}><SevPill sev="Critical" /><SevPill sev="Major" /><SevPill sev="Moderate" /><SevPill sev="Minor" /></div>
             </div>
           </Card>
-          {risks.map((r, i) => {
-            const isOpen = sel === i;
-            return (
-              <div key={i} style={{ opacity: i < rev ? 1 : 0, transform: i < rev ? "translateY(0)" : "translateY(10px)", transition: "all 0.4s ease" }}>
-                <Card style={{ padding: 0, overflow: "hidden", borderColor: isOpen ? (r.sev === "Critical" ? B.redBd : r.sev === "High" ? B.blueBd : B.ynBd) : B.g200 }}>
-                  <button onClick={() => setSel(isOpen ? -1 : i)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "14px 18px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
-                        <r.Icon s={16} c={r.c} />
-                        <span style={{ fontSize: "14px", fontWeight: 600, color: B.g900 }}>{r.t}</span>
-                        <SevPill sev={r.sev} />
-                      </div>
-                      <div style={{ fontSize: "12px", color: B.g500, marginTop: "4px" }}>Est. repair: {r.cost}</div>
-                    </div>
-                    <ChevD s={16} c={B.g300} />
-                  </button>
-                  {isOpen && <div style={{ padding: "0 18px 18px 18px", animation: "su 0.25s ease" }}>
-                    <p style={{ fontSize: "13px", color: B.g700, lineHeight: 1.6, marginBottom: "12px" }}>{r.why}</p>
-                    <Label>Inspection Focus</Label>
-                    {r.focus.map((f, j) => <div key={j} style={{ display: "flex", gap: "8px", padding: "6px 0", fontSize: "13px", color: B.g700 }}><Check s={14} c={B.ok} />{f}</div>)}
-                    <div style={{ marginTop: "10px", fontSize: "12px", color: B.blue, fontWeight: 600 }}>Source: {r.ev}</div>
-                  </div>}
-                </Card>
+          {tierGroups.map((tier) => (
+            <div key={tier.sev}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", padding: "10px 0 4px" }}>
+                <SevPill sev={tier.sev} />
+                <span style={{ fontSize: "12px", fontWeight: 600, color: B.g500 }}>{tier.label}</span>
               </div>
-            );
-          })}
+              {tier.ids.map((rId) => {
+                const r = risks[rId];
+                const isOpen = sel === rId;
+                return (
+                  <div key={rId} style={{ marginBottom: "6px", opacity: rId < rev ? 1 : 0, transform: rId < rev ? "translateY(0)" : "translateY(8px)", transition: "all 0.3s ease" }}>
+                    <Card style={{ padding: 0, overflow: "hidden", borderColor: sevBorder(r.sev, isOpen) }}>
+                      <button onClick={() => setSel(isOpen ? -1 : rId)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "12px 16px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
+                        <div style={{ flex: 1 }}>
+                          <span style={{ fontSize: "13px", fontWeight: 600, color: B.g900 }}>{r.t}</span>
+                          <div style={{ fontSize: "11px", color: B.g500, marginTop: "2px" }}>Est. repair: {r.cost}</div>
+                        </div>
+                        <ChevD s={14} c={B.g300} style={{ transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s ease" }} />
+                      </button>
+                      {isOpen && <div style={{ padding: "0 16px 16px 16px", animation: "su 0.25s ease" }}>
+                        <div style={{ marginBottom: "10px" }}>
+                          <Label>What is it</Label>
+                          <p style={{ fontSize: "13px", color: B.g700, lineHeight: 1.6, margin: "4px 0 0" }}>{r.what}</p>
+                        </div>
+                        <div style={{ marginBottom: "10px" }}>
+                          <Label>Why it matters</Label>
+                          <p style={{ fontSize: "13px", color: B.g700, lineHeight: 1.6, margin: "4px 0 0" }}>{r.why}</p>
+                        </div>
+                        <Label>Common symptoms</Label>
+                        {r.symptoms.map((s, j) => <div key={j} style={{ display: "flex", gap: "8px", padding: "4px 0", fontSize: "12px", color: B.g700 }}><span style={{ color: B.g300 }}>—</span>{s}</div>)}
+                      </div>}
+                    </Card>
+                  </div>
+                );
+              })}
+            </div>
+          ))}
         </div>
       </div>
     </div>
