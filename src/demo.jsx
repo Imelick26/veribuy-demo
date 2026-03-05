@@ -2,6 +2,20 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import * as THREE from "three";
 import logoSrc from "./assets/logo.png";
 
+/* ═══ RESPONSIVE HOOK ═══ */
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth < breakpoint : false
+  );
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const handler = (e) => setIsMobile(e.matches);
+    setIsMobile(mq.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, [breakpoint]);
+  return isMobile;
+}
 /* ═══ TOKENS ═══ */
 const B = {
   brand: "#5C0099", brandH: "#46006d", brandBg: "#F3ECFA", brandBd: "#D4BFE8",
