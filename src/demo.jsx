@@ -1006,6 +1006,7 @@ const STEPS = [P0, P1, P2, P3, P4, P5, P6, P7];
 export default function App() {
   const [step, setStep] = useState(0);
   const prevRef = useRef(0);
+  const mob = useIsMobile();
   const dir = step >= prevRef.current ? "forward" : "back";
   const go = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
   const nav = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
@@ -1013,25 +1014,24 @@ export default function App() {
   return (
     <div style={{ width: "100vw", height: "100vh", background: B.pageBg, fontFamily: "'Inter',system-ui,sans-serif", color: B.g900, display: "flex", flexDirection: "column" }}>
       <style>{`@keyframes tc{50%{opacity:0}} @keyframes su{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.6)}} @keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}} @keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}} @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}} @keyframes scanLine{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}} @keyframes borderPulse{0%,100%{border-color:rgba(92,0,153,0.3)}50%{border-color:rgba(92,0,153,1)}} @keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}} @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} [data-hover="card"]{transition:all 0.2s ease} [data-hover="card"]:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1) !important} [data-hover="btn"]{transition:all 0.15s ease} [data-hover="btn"]:hover{transform:translateY(-1px);filter:brightness(1.08)} * {box-sizing:border-box;margin:0;padding:0}`}</style>
-      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 24px", background: B.white, borderBottom: `1px solid ${B.g200}`, flexShrink: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <img src={logoSrc} alt="VeriBuy" style={{ width: 30, height: 30, borderRadius: "8px", objectFit: "contain" }} />
-          <span style={{ fontSize: "16px", fontWeight: 700 }}>VeriBuy</span>
-          <span style={{ width: 1, height: 20, background: B.g200, margin: "0 6px" }} />
-          <span style={{ fontSize: "13px", color: B.g500, fontWeight: 500 }}>Verify Before You Buy</span>
+      <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: mob ? "10px 14px" : "14px 24px", background: B.white, borderBottom: `1px solid ${B.g200}`, flexShrink: 0, flexWrap: mob ? "wrap" : "nowrap", gap: mob ? "6px" : "0" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: mob ? "6px" : "10px" }}>
+          <img src={logoSrc} alt="VeriBuy" style={{ width: mob ? 24 : 30, height: mob ? 24 : 30, borderRadius: "8px", objectFit: "contain" }} />
+          <span style={{ fontSize: mob ? "14px" : "16px", fontWeight: 700 }}>VeriBuy</span>
+          {!mob && <><span style={{ width: 1, height: 20, background: B.g200, margin: "0 6px" }} /><span style={{ fontSize: "13px", color: B.g500, fontWeight: 500 }}>Verify Before You Buy</span></>}
         </div>
-        {step > 0 && step < 7 && <nav style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        {step > 0 && step < 7 && !mob && <nav style={{ display: "flex", alignItems: "center", gap: "4px" }}>
           {labels.slice(1, 7).map((l, i) => (
             <button key={i} onClick={() => nav(i + 1)} style={{ padding: "5px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: 500, border: "none", background: step === i + 1 ? B.brandBg : "transparent", color: step === i + 1 ? B.brand : B.g500, cursor: "pointer" }}>{l}</button>
           ))}
         </nav>}
         <div style={{ fontSize: "12px", color: B.g500 }}>{step > 0 && step < 7 ? `Step ${step} of 6` : ""}</div>
       </header>
-      <main style={{ flex: 1, overflow: "auto", padding: "28px 32px" }}><div key={step} style={{ animation: `${dir === "forward" ? "slideInRight" : "slideInLeft"} 0.35s ease` }}><Cur go={go} /></div></main>
-      {step > 0 && step < 7 && <footer style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "12px 24px", background: B.white, borderTop: `1px solid ${B.g200}`, flexShrink: 0 }}>
-        <Btn secondary onClick={() => nav(Math.max(0, step - 1))}><ChevR s={14} c={B.g500} rot={180} /> Back</Btn>
-        <span style={{ fontSize: "12px", color: B.g500 }}>Workflow • Step {step} of 6</span>
-        {step < 6 ? <Btn onClick={() => nav(step + 1)}>Continue <Arr s={14} c="#fff" /></Btn> : step === 6 ? <Btn primary onClick={() => nav(7)}>Complete <Check s={14} c="#fff" /></Btn> : null}
+      <main style={{ flex: 1, overflow: "auto", padding: mob ? "16px 12px" : "28px 32px" }}><div key={step} style={{ animation: `${dir === "forward" ? "slideInRight" : "slideInLeft"} 0.35s ease` }}><Cur go={go} mob={mob} /></div></main>
+      {step > 0 && step < 7 && <footer style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: mob ? "10px 12px" : "12px 24px", background: B.white, borderTop: `1px solid ${B.g200}`, flexShrink: 0 }}>
+        <Btn secondary onClick={() => nav(Math.max(0, step - 1))} style={mob ? { padding: "8px 14px", fontSize: "12px" } : {}}><ChevR s={14} c={B.g500} rot={180} /> Back</Btn>
+        {!mob && <span style={{ fontSize: "12px", color: B.g500 }}>Workflow • Step {step} of 6</span>}
+        {step < 6 ? <Btn onClick={() => nav(step + 1)} style={mob ? { padding: "8px 14px", fontSize: "12px" } : {}}>Continue <Arr s={14} c="#fff" /></Btn> : step === 6 ? <Btn primary onClick={() => nav(7)} style={mob ? { padding: "8px 14px", fontSize: "12px" } : {}}>Complete <Check s={14} c="#fff" /></Btn> : null}
       </footer>}
     </div>
   );
