@@ -19,6 +19,129 @@ function useIsMobile(breakpoint = 768) {
   }, [breakpoint]);
   return isMobile;
 }
+/* ═══ SOUND EFFECTS (Web Audio API) ═══ */
+const audioCtx = () => {
+  if (!window._vbAudioCtx) window._vbAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return window._vbAudioCtx;
+};
+
+function playShutter() {
+  try {
+    const ctx = audioCtx();
+    // Short percussive click
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = "square";
+    osc.frequency.setValueAtTime(1800, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.03);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.08);
+    // Mechanical click layer
+    const n = ctx.createBufferSource();
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (d.length * 0.08));
+    n.buffer = buf;
+    const ng = ctx.createGain();
+    ng.gain.setValueAtTime(0.15, ctx.currentTime);
+    ng.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.05);
+    n.connect(ng);
+    ng.connect(ctx.destination);
+    n.start(ctx.currentTime + 0.01);
+  } catch(e) {}
+}
+
+function playPinSound() {
+  try {
+    const ctx = audioCtx();
+    // Bright chime / stamp sound
+    const osc1 = ctx.createOscillator();
+    const osc2 = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(ctx.destination);
+    osc1.type = "sine";
+    osc1.frequency.setValueAtTime(880, ctx.currentTime);
+    osc1.frequency.exponentialRampToValueAtTime(1200, ctx.currentTime + 0.05);
+    osc1.frequency.exponentialRampToValueAtTime(660, ctx.currentTime + 0.3);
+    osc2.type = "sine";
+    osc2.frequency.setValueAtTime(1320, ctx.currentTime);
+    osc2.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.25);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.setValueAtTime(0.2, ctx.currentTime + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+    osc1.start(ctx.currentTime);
+    osc1.stop(ctx.currentTime + 0.5);
+    osc2.start(ctx.currentTime);
+    osc2.stop(ctx.currentTime + 0.5);
+    // Impact thud
+    const osc3 = ctx.createOscillator();
+    const g3 = ctx.createGain();
+    osc3.connect(g3);
+    g3.connect(ctx.destination);
+    osc3.type = "sine";
+    osc3.frequency.setValueAtTime(150, ctx.currentTime);
+    osc3.frequency.exponentialRampToValueAtTime(60, ctx.currentTime + 0.15);
+    g3.gain.setValueAtTime(0.25, ctx.currentTime);
+    g3.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc3.start(ctx.currentTime);
+    osc3.stop(ctx.currentTime + 0.15);
+  } catch(e) {}
+}
+
+let _bgMusic = null;
+function startBgMusic() {
+  try {
+    if (_bgMusic) return;
+    const ctx = audioCtx();
+    // Very subtle ambient pad — drone chord
+    const notes = [130.81, 196.00, 261.63, 329.63]; // C3, G3, C4, E4
+    const oscs = [];
+    const master = ctx.createGain();
+    master.gain.setValueAtTime(0, ctx.currentTime);
+    master.gain.linearRampToValueAtTime(0.018, ctx.currentTime + 3);
+    master.connect(ctx.destination);
+    notes.forEach((freq) => {
+      const osc = ctx.createOscillator();
+      osc.type = "sine";
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      const g = ctx.createGain();
+      g.gain.setValueAtTime(0.25, ctx.currentTime);
+      osc.connect(g);
+      g.connect(master);
+      osc.start(ctx.currentTime);
+      oscs.push(osc);
+    });
+    // Slow LFO for gentle movement
+    const lfo = ctx.createOscillator();
+    const lfoGain = ctx.createGain();
+    lfo.frequency.setValueAtTime(0.15, ctx.currentTime);
+    lfoGain.gain.setValueAtTime(0.004, ctx.currentTime);
+    lfo.connect(lfoGain);
+    lfoGain.connect(master.gain);
+    lfo.start(ctx.currentTime);
+    _bgMusic = { master, oscs, lfo, ctx };
+  } catch(e) {}
+}
+
+function stopBgMusic() {
+  try {
+    if (!_bgMusic) return;
+    const { master, oscs, lfo, ctx } = _bgMusic;
+    master.gain.linearRampToValueAtTime(0, ctx.currentTime + 2);
+    setTimeout(() => {
+      oscs.forEach(o => { try { o.stop(); } catch(e) {} });
+      try { lfo.stop(); } catch(e) {}
+      _bgMusic = null;
+    }, 2500);
+  } catch(e) {}
+}
+
 /* ═══ TOKENS ═══ */
 const B = {
   brand: "#5C0099", brandH: "#46006d", brandBg: "#F3ECFA", brandBd: "#D4BFE8",
@@ -395,7 +518,7 @@ const P0 = ({ go, mob }) => {
           </Card>
         ))}
       </div>
-      <Btn primary onClick={() => go(1)} style={{ animation: "scaleIn 0.4s ease 0.4s both" }}>Begin Verification <Arr s={14} c="#fff" /></Btn>
+      <Btn primary onClick={() => { startBgMusic(); go(1); }} style={{ animation: "scaleIn 0.4s ease 0.4s both" }}>Begin Verification <Arr s={14} c="#fff" /></Btn>
     </div>
   );
 };
@@ -561,6 +684,7 @@ const P3 = ({ mob }) => {
   const nextUncaptured = () => { for (let i = 0; i < captureItems.length; i++) if (!captured.has(i)) return i; return -1; };
   const openHud = (idx) => { setHudIdx(idx >= 0 ? idx : nextUncaptured()); setHudActive(true); setAligning(false); setConfirmed(false); };
   const doCapture = () => {
+    playShutter();
     setAligning(true); setScore(0);
     setTimeout(() => { setScore(Math.floor(Math.random() * 6) + 95); }, 800);
     setTimeout(() => {
@@ -999,8 +1123,9 @@ const P7 = ({ go, mob }) => {
   const [shieldVisible, setShieldVisible] = useState(false);
   const [shieldPinned, setShieldPinned] = useState(false);
   useEffect(() => {
+    stopBgMusic();
     const t1 = setTimeout(() => setShieldVisible(true), 800);
-    const t2 = setTimeout(() => setShieldPinned(true), 1600);
+    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 1600);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, []);
   return (
