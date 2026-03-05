@@ -179,14 +179,14 @@ function useVoiceoverPilot(nav, step) {
     /* Timed page transitions matching the talk track narration */
     const cues = [
       /* Story scenes are handled by P0 internal timers */
-      /* After story + login, welcome shows. Auto-advance from welcome to P1 */
-      [68, () => nav(1)],    /* ~1:08 — "Everything starts with the VIN" */
-      [92, () => nav(2)],    /* ~1:32 — "Before anyone even sees the vehicle" */
-      [155, () => nav(3)],   /* ~2:35 — "Now the inspection begins" */
-      [202, () => nav(4)],   /* ~3:22 — "Now comes the moment of truth" */
-      [268, () => nav(5)],   /* ~4:28 — "What should you actually pay?" */
-      [310, () => nav(6)],   /* ~5:10 — "All of this rolls into the Verified Report" */
-      [330, () => nav(7)],   /* ~5:30 — "At first glance, this Bronco Sport" */
+      /* After story + login + welcome, auto-advance through demo */
+      [65, () => nav(1)],    /* ~1:05 — "Everything starts with the VIN" */
+      [90, () => nav(2)],    /* ~1:30 — "VeriBuy goes beyond a basic VIN report" */
+      [150, () => nav(3)],   /* ~2:30 — "Now the inspection begins" */
+      [200, () => nav(4)],   /* ~3:20 — "Now comes the moment of truth" */
+      [260, () => nav(5)],   /* ~4:20 — "What should you actually pay?" */
+      [305, () => nav(6)],   /* ~5:05 — "All of this rolls into the Verified Report" */
+      [325, () => nav(7)],   /* ~5:25 — "At first glance, this Bronco Sport" */
     ];
 
     cues.forEach(([time, fn]) => {
@@ -349,7 +349,7 @@ const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
        Wheel center: X ±0.52, Y ~0.30 */
     const hotspots = [
       /* Engine Bay — clustered on hood area */
-      {id:0,  pos:new THREE.Vector3(0, 0.82, 1.54),      color:"#B91C1C"},   // Engine Coolant (top center engine)
+      {id:0,  pos:new THREE.Vector3(0.30, 0.78, 1.48),   color:"#B91C1C"},   // Engine Coolant (front right engine bay)
       {id:2,  pos:new THREE.Vector3(-0.18, 0.78, 1.48),   color:"#B91C1C"},   // Turbocharger (left of center)
       {id:3,  pos:new THREE.Vector3(0.20, 0.76, 1.50),    color:"#B91C1C"},   // Fuel Injector (right of center)
       {id:6,  pos:new THREE.Vector3(-0.28, 0.72, 1.25),   color:"#EA580C"},   // Water Pump (left mid engine)
@@ -466,19 +466,16 @@ const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
         <div style={{width:16,height:16,border:"2px solid "+B.g200,borderTopColor:B.brand,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
         Loading 3D model…
       </div>}
-      {!loading && hsp.filter(h=>h.visible).map(h=>{
-        const isActive = activeRisk===h.id;
-        return (
+      {!loading && hsp.filter(h=>h.visible && activeRisk===h.id).map(h=>(
         <button key={h.id} onClick={()=>onSpotClick?.(h.id)} style={{
           position:"absolute",left:h.sx+"px",top:h.sy+"px",transform:"translate(-50%,-50%)",
-          width:isActive?22:10,height:isActive?22:10,borderRadius:"50%",
-          border:`1.5px solid ${h.color}`,background:isActive?h.color+"30":"rgba(255,255,255,0.25)",
+          width:22,height:22,borderRadius:"50%",
+          border:`2px solid ${h.color}`,background:h.color+"30",
           cursor:"pointer",transition:"all 0.3s ease",display:"flex",alignItems:"center",justifyContent:"center",
-          boxShadow:isActive?`0 0 12px ${h.color}40`:`0 0 4px ${h.color}20`,zIndex:isActive?11:10,
-          animation:isActive?"pulse 2s ease infinite":"none",
-        }}><div style={{width:isActive?6:3,height:isActive?6:3,borderRadius:"50%",background:h.color,transition:"all 0.3s ease"}}/></button>
-        );
-      })}
+          boxShadow:`0 0 14px ${h.color}50, 0 0 28px ${h.color}20`,zIndex:11,
+          animation:"pulse 2s ease infinite",
+        }}><div style={{width:7,height:7,borderRadius:"50%",background:h.color}}/></button>
+      ))}
       <div style={{display:"flex",justifyContent:"center",gap:"14px",marginTop:"10px"}}>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.crit}/> Critical</div>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.orange}/> Major</div>
@@ -601,33 +598,33 @@ const P0 = ({ go, mob, startVoiceover }) => {
   /* Story auto-advance: scenes 0-3, then login phases 4-6, then welcome 7 */
   useEffect(() => {
     if (phase === 0 && startedVO) {
-      /* Scene 1: "Every dealership has been there" — hold for narration */
-      const t1 = setTimeout(() => setStoryBeat(1), 3000);
-      const t2 = setTimeout(() => setPhase(1), 8000);
+      /* Scene 1: "Every dealership has been there" — narration ~7s */
+      const t1 = setTimeout(() => setStoryBeat(1), 2500);
+      const t2 = setTimeout(() => setPhase(1), 7000);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [phase, startedVO]);
   useEffect(() => {
     if (phase === 1) {
-      /* Scene 2: "On the surface, everything checks out" */
+      /* Scene 2: "On the surface, everything checks out" — ~7s */
       const t = setTimeout(() => setPhase(2), 7000);
       return () => clearTimeout(t);
     }
   }, [phase]);
   useEffect(() => {
     if (phase === 2) {
-      /* Scene 3: "But then recon starts..." — issues appear one by one */
-      const t0 = setTimeout(() => setIssueIdx(0), 1500);
-      const t1 = setTimeout(() => setIssueIdx(1), 3500);
-      const t2 = setTimeout(() => setIssueIdx(2), 5500);
-      const t3 = setTimeout(() => setPhase(3), 9000);
+      /* Scene 3: "But then recon starts..." — issues slide in ~2s apart */
+      const t0 = setTimeout(() => setIssueIdx(0), 1200);
+      const t1 = setTimeout(() => setIssueIdx(1), 3200);
+      const t2 = setTimeout(() => setIssueIdx(2), 5200);
+      const t3 = setTimeout(() => setPhase(3), 9500);
       return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [phase]);
   useEffect(() => {
     if (phase === 3) {
-      /* Scene 4: "That's the gap VeriBuy was built to solve" */
-      const t = setTimeout(() => setPhase(4), 10000);
+      /* Scene 4: "That's the gap VeriBuy was built to solve" — ~14s of narration */
+      const t = setTimeout(() => setPhase(4), 14000);
       return () => clearTimeout(t);
     }
   }, [phase]);
@@ -644,7 +641,7 @@ const P0 = ({ go, mob, startVoiceover }) => {
     const issues = [
       { icon: Tri, text: "A blown head gasket", cost: "$4,200+", c: B.crit },
       { icon: Circ, text: "An open recall", cost: "Undisclosed", c: B.orange },
-      { icon: Eye, text: "A hidden issue no walk-around caught", cost: "Unknown", c: B.brand },
+      { icon: Wrench, text: "Additional mechanical or cosmetic issues", cost: "$500 – $2,000+", c: "#EAB308" },
     ];
     return (
       <div style={{ position: "relative", minHeight: "70vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", overflow: "hidden", borderRadius: "16px", margin: mob ? "-8px -4px" : "-12px -16px", padding: mob ? "40px 20px" : "48px 32px" }}>
@@ -877,7 +874,7 @@ const P2 = ({ mob }) => {
     const autoExpand = setTimeout(() => setSel(0), 2800);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); };
   }, []);
-  useAutoScroll([[4000, 300], [8000, 400]]);
+  useAutoScroll([[4000, 200], [10000, 350], [16000, "bottom"]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
