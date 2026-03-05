@@ -1514,10 +1514,10 @@ export default function App() {
   const [step, setStep] = useState(0);
   const prevRef = useRef(0);
   const mob = useIsMobile();
-  const voiceover = useVoiceoverPilot(nav, step);
   const dir = step >= prevRef.current ? "forward" : "back";
   const go = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
   const nav = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
+  const voiceover = useVoiceoverPilot(nav, step);
   const Cur = STEPS[step];
   return (
     <div style={{ width: "100vw", height: "100vh", background: B.pageBg, fontFamily: "'Inter',system-ui,sans-serif", color: B.g900, display: "flex", flexDirection: "column", overflowX: "hidden" }}>
