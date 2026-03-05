@@ -448,6 +448,78 @@ const risks = [
   { id: 15, sev: "Minor", Icon: Eye, c: B.ok, t: "Cabin or Engine Filter Service", cost: "$50 – $200", what: "Cabin air filter and engine air filter service intervals on the Bronco Sport are typically 15K–20K miles. Vehicles in dusty or high-pollen environments may require earlier replacement.", why: "Filter condition is a minor but visible indicator of maintenance history. Clogged filters can affect HVAC performance and engine efficiency, and are easily inspected during acquisition.", symptoms: ["Reduced airflow from cabin vents", "Musty odor from HVAC system", "Visible debris or discoloration on filter media", "Slight decrease in fuel efficiency"] },
 ];
 
+
+/* ═══ COUNT-UP ANIMATION ═══ */
+const CountUp = ({ target, prefix = "", style }) => {
+  const [val, setVal] = useState(0);
+  const ref = useRef(null);
+  const started = useRef(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !started.current) {
+        started.current = true;
+        const duration = 1200;
+        const startTime = performance.now();
+        const animate = (now) => {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          setVal(Math.round(eased * target));
+          if (progress < 1) requestAnimationFrame(animate);
+        };
+        requestAnimationFrame(animate);
+      }
+    }, { threshold: 0.5 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [target]);
+  return <div ref={ref} style={style}>{prefix}{val.toLocaleString()}</div>;
+};
+
+/* ═══ ANIMATED PAIN POINT TICKER ═══ */
+const painPoints = [
+  { icon: Tri, text: "A blown head gasket", cost: "$4,200+", c: B.crit },
+  { icon: Circ, text: "An open recall", cost: "Undisclosed", c: B.orange },
+  { icon: Eye, text: "A hidden electrical issue", cost: "$1,800+", c: B.brand },
+  { icon: Wrench, text: "Premature transmission wear", cost: "$3,500+", c: B.red },
+];
+const PainPointTicker = ({ mob }) => {
+  const [idx, setIdx] = useState(0);
+  const [show, setShow] = useState(true);
+  useEffect(() => {
+    const cycle = setInterval(() => {
+      setShow(false);
+      setTimeout(() => {
+        setIdx(i => (i + 1) % painPoints.length);
+        setShow(true);
+      }, 400);
+    }, 3500);
+    return () => clearInterval(cycle);
+  }, []);
+  const pp = painPoints[idx];
+  return (
+    <div style={{ marginBottom: "24px", minHeight: "56px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{
+        display: "flex", alignItems: "center", gap: "12px",
+        padding: mob ? "10px 16px" : "12px 24px",
+        borderRadius: "12px", background: B.g50,
+        border: `1px solid ${B.g200}`,
+        opacity: show ? 1 : 0,
+        transform: show ? "translateY(0)" : "translateY(6px)",
+        transition: "all 0.4s ease",
+      }}>
+        <div style={{ width: 36, height: 36, borderRadius: "8px", background: pp.c + "12", border: `1px solid ${pp.c}30`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+          <pp.icon s={16} c={pp.c} />
+        </div>
+        <div style={{ textAlign: "left" }}>
+          <div style={{ fontSize: "13px", fontWeight: 600, color: B.g900 }}>{pp.text}</div>
+          <div style={{ fontSize: "11px", color: B.g500 }}>Hidden cost: <span style={{ fontWeight: 600, color: pp.c }}>{pp.cost}</span></div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 /* ═══ PAGE 0: INTRO ═══ */
 const P0 = ({ go, mob }) => {
   const [phase, setPhase] = useState(0);
@@ -506,7 +578,11 @@ const P0 = ({ go, mob }) => {
       </div>
       <div style={{ fontSize: "13px", color: B.ok, fontWeight: 600, marginBottom: "28px", animation: "scaleIn 0.4s ease" }}>Welcome, Premier Ford Dealership</div>
       <h1 style={{ fontSize: mob ? "22px" : "32px", fontWeight: 700, color: B.g900, margin: "0 0 14px", maxWidth: "580px", lineHeight: 1.2 }}>Pre-Purchase Vehicle Intelligence</h1>
-      <p style={{ fontSize: mob ? "13px" : "15px", color: B.g700, margin: "0 0 36px", maxWidth: "520px", lineHeight: 1.65, padding: mob ? "0 8px" : "0" }}>VIN-specific risk intelligence, guided inspection capture, and live market pricing — producing verified condition reports for data-backed acquisition decisions.</p>
+      <p style={{ fontSize: mob ? "13px" : "15px", color: B.g700, margin: "0 0 20px", maxWidth: "520px", lineHeight: 1.65, padding: mob ? "0 8px" : "0" }}>VIN-specific risk intelligence, guided inspection capture, and live market pricing — producing verified condition reports for data-backed acquisition decisions.</p>
+
+      {/* Animated pain point ticker — cycles through real scenarios */}
+      <PainPointTicker mob={mob} />
+
       <div style={{ display: "flex", gap: mob ? "10px" : "16px", marginBottom: "36px", flexWrap: "wrap", justifyContent: "center", flexDirection: mob ? "column" : "row", alignItems: mob ? "center" : "stretch", padding: mob ? "0 8px" : "0" }}>
         {[[Tri, "Guided Inspection", "Structured capture identifies issues photos alone miss."],
           [Bar, "Market Pricing", "Live comps from AutoTrader, Cars.com & wholesale."],
@@ -592,7 +668,9 @@ const P2 = ({ mob }) => {
   const [rev, setRev] = useState(0);
   useEffect(() => {
     const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
-    return () => t.forEach(clearTimeout);
+    // Auto-expand the first critical risk (head gasket) after risks load
+    const autoExpand = setTimeout(() => setSel(0), 2800);
+    return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); };
   }, []);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
@@ -850,7 +928,9 @@ const P4 = ({ mob }) => {
   const [histLoading, setHistLoading] = useState(false);
   useEffect(() => {
     const t = findings.map((_, i) => setTimeout(() => setRev(i + 1), 400 + i * 400));
-    return () => t.forEach(clearTimeout);
+    // Auto-expand the head gasket finding
+    const autoOpen = setTimeout(() => setOpen(0), 2000);
+    return () => { t.forEach(clearTimeout); clearTimeout(autoOpen); };
   }, []);
   const score = 64, sc = score < 50 ? B.red : score < 75 ? B.black : B.ok, scBg = score < 50 ? B.redBg : score < 75 ? B.ynBg : B.okBg;
   const handleAddHistory = () => {
@@ -1027,7 +1107,7 @@ const P5 = ({ mob }) => (
       </div>
       <div style={{ marginTop: "20px", padding: "24px", borderRadius: "12px", background: B.g50, textAlign: "center" }}>
         <Label>Recommended Max Acquisition</Label>
-        <div style={{ fontSize: mob ? "32px" : "46px", fontWeight: 800, color: B.g900, letterSpacing: "-2px" }}>$15,275</div>
+        <CountUp target={15275} prefix="$" style={{ fontSize: mob ? "32px" : "46px", fontWeight: 800, color: B.g900, letterSpacing: "-2px" }} />
         <div style={{ width: "60px", height: "2px", background: B.red, margin: "6px auto 12px" }} />
         <div style={{ fontSize: "13px", color: B.g500 }}>Based on $24,100 avg retail (clean) minus $4,825 estimated reconditioning.</div>
       </div>
@@ -1049,7 +1129,7 @@ const P6 = ({ mob }) => {
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto" }}>
       {/* PDF Document */}
-      <div style={{ background: B.white, borderRadius: "4px", boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08)", padding: mob ? "20px 16px 20px" : "48px 48px 40px", position: "relative", overflow: "hidden" }}>
+      <div style={{ background: B.white, borderRadius: "4px", boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08)", padding: mob ? "20px 16px 20px" : "48px 48px 40px", position: "relative", overflow: "hidden", borderTop: `3px solid ${B.brand}` }}>
         {/* Header */}
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px", flexDirection: mob ? "column" : "row", gap: mob ? "10px" : "0", ...S(0) }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
