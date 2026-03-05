@@ -110,7 +110,7 @@ function decodeMesh(b64) {
   });
 }
 
-const BroncoModel = ({ activeRisk, onSpotClick }) => {
+const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
   const mountRef = useRef(null);
   const isDragging = useRef(false);
   const prevMouse = useRef({x:0,y:0});
@@ -272,7 +272,7 @@ const BroncoModel = ({ activeRisk, onSpotClick }) => {
 
   return (
     <div style={{position:"relative"}}>
-      <div ref={mountRef} style={{width:"100%",height:"440px",borderRadius:"10px",overflow:"hidden",background:"linear-gradient(180deg,#f5f2f9 0%,#ede8f3 35%,#e4dff0 100%)",cursor:"grab"}}/>
+      <div ref={mountRef} style={{width:"100%",height: mob ? "280px" : "440px",borderRadius:"10px",overflow:"hidden",background:"linear-gradient(180deg,#f5f2f9 0%,#ede8f3 35%,#e4dff0 100%)",cursor:"grab"}}/>
       {loading && <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",fontSize:"13px",color:B.g500,display:"flex",alignItems:"center",gap:"8px"}}>
         <div style={{width:16,height:16,border:"2px solid "+B.g200,borderTopColor:B.brand,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
         Loading 3D model…
@@ -461,7 +461,7 @@ const tierGroups = [
   { label: "Level 3 — Moderate", sev: "Moderate", ids: [8,9,10,11] },
   { label: "Level 4 — Minor", sev: "Minor", ids: [12,13,14,15] },
 ];
-const P2 = () => {
+const P2 = ({ mob }) => {
   const [sel, setSel] = useState(-1);
   const [rev, setRev] = useState(0);
   useEffect(() => {
@@ -470,15 +470,15 @@ const P2 = () => {
   }, []);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
-      <h2 style={{ fontSize: "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
+      <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
       <p style={{ color: B.g500, fontSize: "14px", marginBottom: "20px" }}>Known failure points for 2024 Bronco Sport 1.5L EcoBoost — sourced from NHTSA, TSBs, and owner data.</p>
-      <div style={{ display: "flex", gap: "20px", alignItems: "flex-start" }}>
-        <div style={{ flex: "0 0 48%", position: "sticky", top: "90px" }}>
-          <Card style={{ padding: "12px", overflow: "hidden" }}>
-            <BroncoModel activeRisk={sel} onSpotClick={(i) => setSel(i === sel ? -1 : i)} />
+      <div style={{ display: "flex", gap: mob ? "14px" : "20px", alignItems: "flex-start", flexDirection: mob ? "column" : "row" }}>
+        <div style={{ flex: mob ? "none" : "0 0 48%", width: mob ? "100%" : "auto", position: mob ? "relative" : "sticky", top: mob ? "auto" : "90px" }}>
+          <Card style={{ padding: mob ? "8px" : "12px", overflow: "hidden" }}>
+            <BroncoModel activeRisk={sel} onSpotClick={(i) => setSel(i === sel ? -1 : i)} mob={mob} />
           </Card>
         </div>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px", width: mob ? "100%" : "auto" }}>
           <Card style={{ padding: "14px 18px", background: "#4B5563", borderColor: "#6B7280", color: B.white }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
               <span style={{ fontSize: "14px", fontWeight: 700, color: B.white }}>16 Risk Areas Identified</span>
