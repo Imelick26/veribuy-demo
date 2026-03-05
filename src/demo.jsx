@@ -323,7 +323,7 @@ const risks = [
 ];
 
 /* ═══ PAGE 0: INTRO ═══ */
-const P0 = ({ go }) => {
+const P0 = ({ go, mob }) => {
   const [phase, setPhase] = useState(0);
   const [dealer, setDealer] = useState("");
   const [pass, setPass] = useState("");
@@ -379,13 +379,13 @@ const P0 = ({ go }) => {
         <span style={{ fontSize: "26px", fontWeight: 800, color: B.g900 }}>VeriBuy</span>
       </div>
       <div style={{ fontSize: "13px", color: B.ok, fontWeight: 600, marginBottom: "28px", animation: "scaleIn 0.4s ease" }}>Welcome, Premier Ford Dealership</div>
-      <h1 style={{ fontSize: "32px", fontWeight: 700, color: B.g900, margin: "0 0 14px", maxWidth: "580px", lineHeight: 1.2 }}>Pre-Purchase Vehicle Intelligence</h1>
-      <p style={{ fontSize: "15px", color: B.g700, margin: "0 0 36px", maxWidth: "520px", lineHeight: 1.65 }}>VIN-specific risk intelligence, guided inspection capture, and live market pricing — producing verified condition reports for data-backed acquisition decisions.</p>
-      <div style={{ display: "flex", gap: "16px", marginBottom: "36px", flexWrap: "wrap", justifyContent: "center" }}>
+      <h1 style={{ fontSize: mob ? "22px" : "32px", fontWeight: 700, color: B.g900, margin: "0 0 14px", maxWidth: "580px", lineHeight: 1.2 }}>Pre-Purchase Vehicle Intelligence</h1>
+      <p style={{ fontSize: mob ? "13px" : "15px", color: B.g700, margin: "0 0 36px", maxWidth: "520px", lineHeight: 1.65, padding: mob ? "0 8px" : "0" }}>VIN-specific risk intelligence, guided inspection capture, and live market pricing — producing verified condition reports for data-backed acquisition decisions.</p>
+      <div style={{ display: "flex", gap: mob ? "10px" : "16px", marginBottom: "36px", flexWrap: "wrap", justifyContent: "center", flexDirection: mob ? "column" : "row", alignItems: mob ? "center" : "stretch", padding: mob ? "0 8px" : "0" }}>
         {[[Tri, "Guided Inspection", "Structured capture identifies issues photos alone miss."],
           [Bar, "Market Pricing", "Live comps from AutoTrader, Cars.com & wholesale."],
           [Lock, "Verified Reports", "Blockchain-anchored evidence packages."]].map(([Icon, t, d], i) => (
-          <Card key={i} style={{ flex: "1 1 0", minWidth: "170px", maxWidth: "220px", textAlign: "center", animation: `scaleIn 0.4s ease ${i * 0.1}s both` }}>
+          <Card key={i} style={{ flex: mob ? "none" : "1 1 0", minWidth: mob ? "auto" : "170px", maxWidth: mob ? "100%" : "220px", width: mob ? "100%" : "auto", textAlign: "center", animation: `scaleIn 0.4s ease ${i * 0.1}s both` }}>
             <div style={{ width: 36, height: 36, borderRadius: "10px", background: B.brandBg, border: `1px solid ${B.brandBd}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 10px" }}><Icon s={18} c={B.brand} /></div>
             <div style={{ fontSize: "13px", fontWeight: 700, color: B.g900, marginBottom: "4px" }}>{t}</div>
             <div style={{ fontSize: "11px", color: B.g500, lineHeight: 1.55 }}>{d}</div>
@@ -398,7 +398,7 @@ const P0 = ({ go }) => {
 };
 
 /* ═══ PAGE 1: VEHICLE ID ═══ */
-const P1 = () => {
+const P1 = ({ mob }) => {
   const [ph, setPh] = useState(0);
   const [typed, setTyped] = useState("");
 
@@ -416,11 +416,11 @@ const P1 = () => {
   }, [ph]);
   return (
     <div style={{ maxWidth: "680px", margin: "0 auto" }}>
-      <h2 style={{ fontSize: "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Vehicle Identification</h2>
+      <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Vehicle Identification</h2>
       <p style={{ color: B.g500, fontSize: "14px", marginBottom: "20px" }}>Enter a VIN to load vehicle data and known issues.</p>
       <Card>
         <Label>VIN Number</Label>
-        <div style={{ display: "flex", gap: "12px", marginBottom: "20px" }}>
+        <div style={{ display: "flex", gap: "12px", marginBottom: "20px", flexDirection: mob ? "column" : "row" }}>
           <div style={{ flex: 1, padding: "12px 16px", background: B.g50, border: `1px solid ${B.g200}`, borderRadius: "10px", fontFamily: "monospace", fontSize: "15px", fontWeight: 600, color: B.g900, letterSpacing: "1px" }}>{typed}<span style={{ animation: "tc 1s step-end infinite", color: B.brand }}>|</span></div>
           <div style={{ padding: "12px 20px", borderRadius: "10px", background: ph >= 1 ? B.ok : B.brand, color: "#fff", fontWeight: 600, fontSize: "14px", display: "flex", alignItems: "center", gap: "6px", cursor: "pointer" }}>{ph >= 1 ? <><Check s={16} c="#fff" /> Decoded</> : <><Srch s={16} c="#fff" /> Decode</>}</div>
         </div>
@@ -429,12 +429,12 @@ const P1 = () => {
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "14px" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><Check s={16} c={B.ok} /><span style={{ fontSize: "14px", fontWeight: 700, color: B.g900 }}>Vehicle Identified</span></div>
             </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "14px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr 1fr" : "1fr 1fr 1fr", gap: mob ? "10px" : "14px" }}>
               {[["Year","2024"],["Make","Ford"],["Model","Bronco Sport"],["Trim","Base"],["Body","4D SUV"],["Drivetrain","AWD"]].map(([k,v],i) => (
                 <div key={i}><div style={{ fontSize: "11px", color: B.g500, marginBottom: "2px" }}>{k}</div><div style={{ fontSize: "14px", fontWeight: 600, color: B.g900 }}>{v}</div></div>
               ))}
             </div>
-            <div style={{ marginTop: "16px", display: "flex", gap: "16px", padding: "12px 16px", background: B.white, borderRadius: "8px", border: `1px solid ${B.g200}`, alignItems: "center", flexWrap: "wrap" }}>
+            <div style={{ marginTop: "16px", display: "flex", gap: mob ? "8px" : "16px", padding: "12px 16px", background: B.white, borderRadius: "8px", border: `1px solid ${B.g200}`, alignItems: "center", flexWrap: "wrap", flexDirection: mob ? "column" : "row" }}>
               <span style={{ fontSize: "13px", color: B.g500 }}>Odometer: <b style={{ color: B.g900 }}>21,340 mi</b></span>
               <span style={{ color: B.g200 }}>|</span>
               <span style={{ fontSize: "13px", color: B.g500 }}>MSRP: <b style={{ color: B.g900 }}>$29,395</b></span>
