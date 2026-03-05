@@ -954,7 +954,7 @@ const Corner = ({ pos }) => {
   if (pos === "bl") return <div style={{ ...s, bottom: -1, left: -1, borderBottomWidth: 3, borderLeftWidth: 3, borderBottomLeftRadius: 4 }} />;
   return <div style={{ ...s, bottom: -1, right: -1, borderBottomWidth: 3, borderRightWidth: 3, borderBottomRightRadius: 4 }} />;
 };
-const P3 = ({ mob }) => {
+const P3 = ({ mob, voActive }) => {
   const [captured, setCaptured] = useState(new Set());
   const [hudActive, setHudActive] = useState(false);
   const [hudIdx, setHudIdx] = useState(0);
@@ -965,6 +965,46 @@ const P3 = ({ mob }) => {
   const [steadyGreen, setSteadyGreen] = useState(false);
   const allDone = captured.size === captureItems.length;
   const nextUncaptured = () => { for (let i = 0; i < captureItems.length; i++) if (!captured.has(i)) return i; return -1; };
+  const autoCaptureRef = useRef(false);
+  useEffect(() => {
+    if (!voActive || autoCaptureRef.current) return;
+    autoCaptureRef.current = true;
+    /* Auto-capture sequence for voiceover mode */
+    /* 2s: open HUD on first shot */
+    const t1 = setTimeout(() => { setHudIdx(0); setHudActive(true); setAligning(false); setConfirmed(false); }, 2000);
+    /* 4s: trigger first capture (hold steady sequence) */
+    const t2 = setTimeout(() => {
+      setHoldSteady(true); setSteadyGreen(false);
+      setTimeout(() => {
+        setSteadyGreen(true);
+        setTimeout(() => {
+          setHoldSteady(false); setSteadyGreen(false);
+          playShutter();
+          setAligning(true); setScore(0);
+          setTimeout(() => setScore(97), 800);
+          setTimeout(() => {
+            setAligning(false); setConfirmed(true);
+            setCaptured(prev => new Set([...prev, 0]));
+            setTimeout(() => {
+              setConfirmed(false); setHudIdx(1);
+              /* 2nd capture after brief pause */
+              setTimeout(() => {
+                playShutter();
+                setAligning(true); setScore(0);
+                setTimeout(() => setScore(96), 800);
+                setTimeout(() => {
+                  setAligning(false); setConfirmed(true);
+                  setCaptured(prev => new Set([...prev, 1]));
+                  setTimeout(() => { setConfirmed(false); setHudActive(false); }, 1200);
+                }, 1400);
+              }, 1500);
+            }, 1000);
+          }, 1400);
+        }, 800);
+      }, 1200);
+    }, 4000);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, [voActive]);
   const openHud = (idx) => { setHudIdx(idx >= 0 ? idx : nextUncaptured()); setHudActive(true); setAligning(false); setConfirmed(false); };
   const doCapture = () => {
     if (hudIdx === 0 && !captured.has(0)) {
@@ -1517,6 +1557,7 @@ export default function App() {
   const dir = step >= prevRef.current ? "forward" : "back";
   const go = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
   const nav = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
+  const [voActive, setVoActive] = useState(false);
   const voiceover = useVoiceoverPilot(nav, step);
   const Cur = STEPS[step];
   return (
@@ -1535,7 +1576,7 @@ export default function App() {
         </nav>}
         <div style={{ fontSize: "12px", color: B.g500 }}>{step > 0 && step < 7 ? `Step ${step} of 6` : ""}</div>
       </header>
-      <main style={{ flex: 1, overflow: "auto", padding: mob ? "16px 12px" : "28px 32px" }}><div key={step} style={{ animation: `${dir === "forward" ? "slideInRight" : "slideInLeft"} 0.35s ease` }}><Cur go={go} mob={mob} startVoiceover={voiceover.start} /></div></main>
+      <main style={{ flex: 1, overflow: "auto", padding: mob ? "16px 12px" : "28px 32px" }}><div key={step} style={{ animation: `${dir === "forward" ? "slideInRight" : "slideInLeft"} 0.35s ease` }}><Cur go={go} mob={mob} voActive={voActive} startVoiceover={(...args) => { setVoActive(true); voiceover.start(...args); }} /></div></main>
       {step > 0 && step < 7 && <footer style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: mob ? "10px 12px" : "12px 24px", background: B.white, borderTop: `1px solid ${B.g200}`, flexShrink: 0 }}>
         <Btn secondary onClick={() => nav(Math.max(0, step - 1))} style={mob ? { padding: "8px 14px", fontSize: "12px" } : {}}><ChevR s={14} c={B.g500} rot={180} /> Back</Btn>
         {!mob && <span style={{ fontSize: "12px", color: B.g500 }}>Workflow • Step {step} of 6</span>}
