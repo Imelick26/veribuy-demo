@@ -547,7 +547,7 @@ const Corner = ({ pos }) => {
   if (pos === "bl") return <div style={{ ...s, bottom: -1, left: -1, borderBottomWidth: 3, borderLeftWidth: 3, borderBottomLeftRadius: 4 }} />;
   return <div style={{ ...s, bottom: -1, right: -1, borderBottomWidth: 3, borderRightWidth: 3, borderBottomRightRadius: 4 }} />;
 };
-const P3 = () => {
+const P3 = ({ mob }) => {
   const [captured, setCaptured] = useState(new Set());
   const [hudActive, setHudActive] = useState(false);
   const [hudIdx, setHudIdx] = useState(0);
@@ -576,7 +576,7 @@ const P3 = () => {
   const item = captureItems[hudIdx];
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-      <h2 style={{ fontSize: "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Guided Media Capture</h2>
+      <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Guided Media Capture</h2>
       <p style={{ color: B.g500, fontSize: "14px", marginBottom: "20px" }}>Structured, step-by-step capture ensures every inspection zone is documented with usable evidence.</p>
       {/* Progress + Start button */}
       <Card style={{ marginBottom: "14px" }}>
@@ -590,7 +590,7 @@ const P3 = () => {
         </div>}
       </Card>
       {/* Grid overview */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
         {captureItems.map((ci, i) => {
           const done = captured.has(i);
           return (
@@ -604,7 +604,7 @@ const P3 = () => {
         })}
       </div>
       {/* Video/audio requirements */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginBottom: "14px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr 1fr", gap: "10px", marginBottom: "14px" }}>
         {[["Walkaround Video","60–90s"],["Engine Start Audio","15–30s"],["Interior Walkthrough","45–60s"]].map(([t,d],i) => (
           <Card key={i} style={{ padding: "14px", textAlign: "center" }}>
             <div style={{ fontSize: "13px", fontWeight: 600, color: B.g900, marginBottom: "4px" }}>{t}</div>
@@ -616,13 +616,13 @@ const P3 = () => {
       {/* ─── HUD OVERLAY ─── */}
       {hudActive && <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.92)", zIndex: 100, display: "flex", flexDirection: "column", animation: "fadeIn 0.3s ease" }}>
         {/* Top bar */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 24px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: mob ? "12px 14px" : "16px 24px" }}>
           <button onClick={() => setHudActive(false)} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", fontSize: "13px", fontWeight: 600, padding: "8px 16px", borderRadius: "8px", cursor: "pointer" }}>✕ Close</button>
           <div style={{ fontSize: "14px", fontWeight: 600, color: "#fff" }}>Shot {hudIdx + 1} of {captureItems.length}</div>
           <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.5)" }}>{captured.size} captured</div>
         </div>
         {/* Viewfinder area */}
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "0 24px" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: mob ? "0 12px" : "0 24px" }}>
           <div style={{ width: "100%", maxWidth: "480px", aspectRatio: "16/10", background: "rgba(255,255,255,0.03)", borderRadius: "8px", border: `2px solid ${confirmed ? B.ok : aligning ? B.ok : "rgba(255,255,255,0.15)"}`, position: "relative", overflow: "hidden", animation: !aligning && !confirmed ? "borderPulse 2s ease infinite" : "none", transition: "border-color 0.3s ease" }}>
             <Corner pos="tl" /><Corner pos="tr" /><Corner pos="bl" /><Corner pos="br" />
             {/* Crosshair */}
@@ -648,7 +648,7 @@ const P3 = () => {
           {/* Zone info */}
           <div style={{ textAlign: "center", marginTop: "20px", maxWidth: "480px" }}>
             <div style={{ fontSize: "20px", fontWeight: 700, color: "#fff", marginBottom: "12px" }}>{item.label}</div>
-            <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap", flexDirection: mob ? "column" : "row", alignItems: "center" }}>
               {[["Distance", item.distance], ["Angle", item.angle], ["Coverage", item.coverage]].map(([k, v], i) => (
                 <div key={i} style={{ padding: "6px 12px", borderRadius: "6px", background: "rgba(255,255,255,0.08)", fontSize: "11px" }}>
                   <span style={{ color: "rgba(255,255,255,0.4)", fontWeight: 600 }}>{k}: </span><span style={{ color: "#fff" }}>{v}</span>
@@ -658,7 +658,7 @@ const P3 = () => {
           </div>
         </div>
         {/* Bottom bar */}
-        <div style={{ padding: "20px 24px 28px", display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
+        <div style={{ padding: mob ? "16px 14px 20px" : "20px 24px 28px", display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
           <PBar v={((captured.size + (confirmed ? 1 : 0)) / captureItems.length) * 100} c={B.ok} />
           {!aligning && !confirmed && <button onClick={doCapture} style={{ width: 64, height: 64, borderRadius: "50%", border: "4px solid rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s ease" }}>
             <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(255,255,255,0.9)" }} />
@@ -776,7 +776,7 @@ const P4 = () => {
                 <span style={{ fontSize: "14px", fontWeight: 700, color: B.g900 }}>Vehicle History Report</span>
                 <span style={{ fontSize: "11px", fontWeight: 600, color: B.brand, background: B.brandBg, border: `1px solid ${B.brandBd}`, padding: "2px 8px", borderRadius: "4px", marginLeft: "auto" }}>External Corroboration</span>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr", gap: "10px", marginBottom: "14px" }}>
                 {[["Title Status","Clean",B.ok],["Accidents Reported","0",B.ok],["Service Records","4 entries",B.brand],["Open Recalls","2",B.red]].map(([k,v,c],i) => (
                   <div key={i} style={{ padding: "12px", borderRadius: "8px", background: B.g50, border: `1px solid ${B.g200}` }}>
                     <div style={{ fontSize: "11px", color: B.g500, marginBottom: "4px" }}>{k}</div>
