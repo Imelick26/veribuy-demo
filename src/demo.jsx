@@ -272,7 +272,7 @@ const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
 
   return (
     <div style={{position:"relative"}}>
-      <div ref={mountRef} style={{width:"100%",height: mob ? "280px" : "440px",borderRadius:"10px",overflow:"hidden",background:"linear-gradient(180deg,#f5f2f9 0%,#ede8f3 35%,#e4dff0 100%)",cursor:"grab"}}/>
+      <div ref={mountRef} style={{width:"100%",height: mob ? "280px" : "440px",borderRadius:"10px",overflow:"hidden",background:"linear-gradient(180deg,#f5f2f9 0%,#ede8f3 35%,#e4dff0 100%)",cursor:"grab",touchAction:"none"}}/>
       {loading && <div style={{position:"absolute",top:"50%",left:"50%",transform:"translate(-50%,-50%)",fontSize:"13px",color:B.g500,display:"flex",alignItems:"center",gap:"8px"}}>
         <div style={{width:16,height:16,border:"2px solid "+B.g200,borderTopColor:B.brand,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
         Loading 3D model…
@@ -1012,7 +1012,7 @@ export default function App() {
   const nav = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
   const Cur = STEPS[step];
   return (
-    <div style={{ width: "100vw", height: "100vh", background: B.pageBg, fontFamily: "'Inter',system-ui,sans-serif", color: B.g900, display: "flex", flexDirection: "column" }}>
+    <div style={{ width: "100vw", height: "100vh", background: B.pageBg, fontFamily: "'Inter',system-ui,sans-serif", color: B.g900, display: "flex", flexDirection: "column", overflowX: "hidden" }}>
       <style>{`@keyframes tc{50%{opacity:0}} @keyframes su{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.6)}} @keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}} @keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}} @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}} @keyframes scanLine{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}} @keyframes borderPulse{0%,100%{border-color:rgba(92,0,153,0.3)}50%{border-color:rgba(92,0,153,1)}} @keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}} @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} [data-hover="card"]{transition:all 0.2s ease} [data-hover="card"]:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1) !important} [data-hover="btn"]{transition:all 0.15s ease} [data-hover="btn"]:hover{transform:translateY(-1px);filter:brightness(1.08)} * {box-sizing:border-box;margin:0;padding:0}`}</style>
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: mob ? "10px 14px" : "14px 24px", background: B.white, borderBottom: `1px solid ${B.g200}`, flexShrink: 0, flexWrap: mob ? "wrap" : "nowrap", gap: mob ? "6px" : "0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: mob ? "6px" : "10px" }}>
