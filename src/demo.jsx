@@ -680,10 +680,39 @@ const P3 = ({ mob }) => {
   const [aligning, setAligning] = useState(false);
   const [confirmed, setConfirmed] = useState(false);
   const [score, setScore] = useState(0);
+  const [holdSteady, setHoldSteady] = useState(false);
+  const [steadyGreen, setSteadyGreen] = useState(false);
   const allDone = captured.size === captureItems.length;
   const nextUncaptured = () => { for (let i = 0; i < captureItems.length; i++) if (!captured.has(i)) return i; return -1; };
   const openHud = (idx) => { setHudIdx(idx >= 0 ? idx : nextUncaptured()); setHudActive(true); setAligning(false); setConfirmed(false); };
   const doCapture = () => {
+    if (hudIdx === 0 && !captured.has(0)) {
+      // First capture: show "hold steady" sequence
+      setHoldSteady(true);
+      setSteadyGreen(false);
+      setTimeout(() => {
+        setSteadyGreen(true);
+        setTimeout(() => {
+          setHoldSteady(false);
+          setSteadyGreen(false);
+          playShutter();
+          setAligning(true); setScore(0);
+          setTimeout(() => { setScore(Math.floor(Math.random() * 6) + 95); }, 800);
+          setTimeout(() => {
+            setAligning(false); setConfirmed(true);
+            setCaptured(prev => new Set([...prev, hudIdx]));
+            setTimeout(() => {
+              setConfirmed(false);
+              let next = -1;
+              for (let i = hudIdx + 1; i < captureItems.length; i++) { if (!captured.has(i) && i !== hudIdx) { next = i; break; } }
+              if (next === -1) for (let i = 0; i < hudIdx; i++) { if (!captured.has(i) && i !== hudIdx) { next = i; break; } }
+              if (next >= 0) { setHudIdx(next); } else { setHudActive(false); }
+            }, 800);
+          }, 1400);
+        }, 800);
+      }, 1200);
+      return;
+    }
     playShutter();
     setAligning(true); setScore(0);
     setTimeout(() => { setScore(Math.floor(Math.random() * 6) + 95); }, 800);
@@ -762,6 +791,15 @@ const P3 = ({ mob }) => {
             </>}
             {/* Scan line */}
             {aligning && <div style={{ position: "absolute", left: 0, right: 0, height: 2, background: `linear-gradient(90deg, transparent, ${B.ok}, transparent)`, animation: "scanLine 1.2s ease infinite" }} />}
+            {/* Hold Steady overlay */}
+            {holdSteady && !aligning && !confirmed && <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", animation: "fadeIn 0.3s ease", zIndex: 2 }}>
+              <div style={{ padding: "10px 20px", borderRadius: "8px", background: steadyGreen ? "rgba(22,163,74,0.9)" : "rgba(234,88,12,0.9)", transition: "background 0.4s ease", backdropFilter: "blur(4px)" }}>
+                <div style={{ fontSize: "14px", fontWeight: 700, color: "#fff", display: "flex", alignItems: "center", gap: "8px" }}>
+                  {!steadyGreen && <><div style={{ width: 8, height: 8, borderRadius: "50%", background: "#FFFF00", animation: "pulse 1s ease infinite" }} />Movement detected — hold steady</>}
+                  {steadyGreen && <><Check s={16} c="#fff" />Steady — capturing</>}
+                </div>
+              </div>
+            </div>}
             {aligning && <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
               <div style={{ width: 28, height: 28, border: "3px solid " + B.ok, borderTopColor: "transparent", borderRadius: "50%", animation: "spin 0.8s linear infinite", marginBottom: "12px" }} />
               <div style={{ fontSize: "14px", fontWeight: 600, color: B.ok }}>Analyzing frame alignment...</div>
@@ -789,7 +827,7 @@ const P3 = ({ mob }) => {
         {/* Bottom bar */}
         <div style={{ padding: mob ? "16px 14px 20px" : "20px 24px 28px", display: "flex", flexDirection: "column", alignItems: "center", gap: "14px" }}>
           <PBar v={((captured.size + (confirmed ? 1 : 0)) / captureItems.length) * 100} c={B.ok} />
-          {!aligning && !confirmed && <button onClick={doCapture} style={{ width: 64, height: 64, borderRadius: "50%", border: "4px solid rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s ease" }}>
+          {!aligning && !confirmed && !holdSteady && <button onClick={doCapture} style={{ width: 64, height: 64, borderRadius: "50%", border: "4px solid rgba(255,255,255,0.9)", background: "rgba(255,255,255,0.15)", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", transition: "all 0.2s ease" }}>
             <div style={{ width: 48, height: 48, borderRadius: "50%", background: "rgba(255,255,255,0.9)" }} />
           </button>}
         </div>
