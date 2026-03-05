@@ -163,6 +163,48 @@ function useAutoScroll(delays) {
   }, []);
 }
 
+/* ═══ VOICEOVER AUTO-PILOT ═══ */
+function useVoiceoverPilot(nav, step) {
+  const audioRef = useRef(null);
+  const startedRef = useRef(false);
+
+  const start = useCallback(() => {
+    if (startedRef.current) return;
+    startedRef.current = true;
+    const audio = new Audio("/voiceover.mp3");
+    audio.volume = 1.0;
+    audioRef.current = audio;
+    audio.play().catch(() => {});
+
+    /* Timed page transitions matching the talk track narration */
+    const cues = [
+      /* Story scenes are handled by P0 internal timers */
+      /* After story + login, welcome shows. Auto-advance from welcome to P1 */
+      [68, () => nav(1)],    /* ~1:08 — "Everything starts with the VIN" */
+      [92, () => nav(2)],    /* ~1:32 — "Before anyone even sees the vehicle" */
+      [155, () => nav(3)],   /* ~2:35 — "Now the inspection begins" */
+      [202, () => nav(4)],   /* ~3:22 — "Now comes the moment of truth" */
+      [268, () => nav(5)],   /* ~4:28 — "What should you actually pay?" */
+      [310, () => nav(6)],   /* ~5:10 — "All of this rolls into the Verified Report" */
+      [330, () => nav(7)],   /* ~5:30 — "At first glance, this Bronco Sport" */
+    ];
+
+    cues.forEach(([time, fn]) => {
+      setTimeout(fn, time * 1000);
+    });
+  }, [nav]);
+
+  const stop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    startedRef.current = false;
+  }, []);
+
+  return { start, stop, audioRef };
+}
+
 /* ═══ TOKENS ═══ */
 const B = {
   brand: "#5C0099", brandH: "#46006d", brandBg: "#F3ECFA", brandBd: "#D4BFE8",
@@ -546,24 +588,25 @@ const PainPointTicker = ({ mob }) => {
 };
 
 /* ═══ PAGE 0: INTRO ═══ */
-const P0 = ({ go, mob }) => {
+const P0 = ({ go, mob, startVoiceover }) => {
   const [phase, setPhase] = useState(0);
   const [dealer, setDealer] = useState("");
   const [pass, setPass] = useState("");
   const [storyBeat, setStoryBeat] = useState(0);
+  const [startedVO, setStartedVO] = useState(false);
   const [issueIdx, setIssueIdx] = useState(-1);
   const fullDealer = "premier_ford";
   const fullPass = "••••••••••";
 
   /* Story auto-advance: scenes 0-3, then login phases 4-6, then welcome 7 */
   useEffect(() => {
-    if (phase === 0) {
+    if (phase === 0 && startedVO) {
       /* Scene 1: "Every dealership has been there" — hold for narration */
       const t1 = setTimeout(() => setStoryBeat(1), 3000);
       const t2 = setTimeout(() => setPhase(1), 8000);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
-  }, [phase]);
+  }, [phase, startedVO]);
   useEffect(() => {
     if (phase === 1) {
       /* Scene 2: "On the surface, everything checks out" */
@@ -687,8 +730,14 @@ const P0 = ({ go, mob }) => {
           </div>
         )}
 
-        {/* Click to advance hint */}
-        {phase <= 3 && <div style={{ position: "absolute", bottom: mob ? "16px" : "24px", left: "50%", transform: "translateX(-50%)", fontSize: "11px", color: "rgba(255,255,255,0.2)", zIndex: 3, cursor: "pointer" }} onClick={() => setPhase(p => Math.min(p + 1, 4))}>Click to advance →</div>}
+        {/* Play demo / advance controls */}
+        {phase === 0 && !startedVO && (
+          <button onClick={() => { setStartedVO(true); if(startVoiceover) startVoiceover(); startBgMusic(); }} style={{ position: "absolute", bottom: mob ? "20px" : "32px", left: "50%", transform: "translateX(-50%)", zIndex: 3, display: "flex", alignItems: "center", gap: "10px", padding: "14px 28px", borderRadius: "12px", background: "linear-gradient(135deg, #5C0099, #7C3AED)", color: "#fff", border: "none", cursor: "pointer", fontSize: "14px", fontWeight: 700, boxShadow: "0 4px 20px rgba(92,0,153,0.4)", animation: "scaleIn 0.5s ease 1s both" }}>
+            <div style={{ width: 0, height: 0, borderLeft: "10px solid #fff", borderTop: "6px solid transparent", borderBottom: "6px solid transparent" }} />
+            Play Demo
+          </button>
+        )}
+        {phase <= 3 && (phase > 0 || startedVO) && <div style={{ position: "absolute", bottom: mob ? "16px" : "24px", left: "50%", transform: "translateX(-50%)", fontSize: "11px", color: "rgba(255,255,255,0.2)", zIndex: 3, cursor: "pointer" }} onClick={() => setPhase(p => Math.min(p + 1, 4))}>Click to skip →</div>}
       </div>
     );
   }
@@ -751,7 +800,7 @@ const P0 = ({ go, mob }) => {
           </Card>
         ))}
       </div>
-      <Btn primary onClick={() => { startBgMusic(); go(1); }} style={{ animation: "scaleIn 0.4s ease 0.4s both" }}>Begin Verification <Arr s={14} c="#fff" /></Btn>
+      <Btn primary onClick={() => go(1)} style={{ animation: "scaleIn 0.4s ease 0.4s both" }}>Begin Verification <Arr s={14} c="#fff" /></Btn>
     </div>
   );
 };
@@ -1468,6 +1517,7 @@ export default function App() {
   const [step, setStep] = useState(0);
   const prevRef = useRef(0);
   const mob = useIsMobile();
+  const voiceover = useVoiceoverPilot(nav, step);
   const dir = step >= prevRef.current ? "forward" : "back";
   const go = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
   const nav = useCallback((s) => { prevRef.current = step; setStep(s); }, [step]);
@@ -1488,7 +1538,7 @@ export default function App() {
         </nav>}
         <div style={{ fontSize: "12px", color: B.g500 }}>{step > 0 && step < 7 ? `Step ${step} of 6` : ""}</div>
       </header>
-      <main style={{ flex: 1, overflow: "auto", padding: mob ? "16px 12px" : "28px 32px" }}><div key={step} style={{ animation: `${dir === "forward" ? "slideInRight" : "slideInLeft"} 0.35s ease` }}><Cur go={go} mob={mob} /></div></main>
+      <main style={{ flex: 1, overflow: "auto", padding: mob ? "16px 12px" : "28px 32px" }}><div key={step} style={{ animation: `${dir === "forward" ? "slideInRight" : "slideInLeft"} 0.35s ease` }}><Cur go={go} mob={mob} startVoiceover={voiceover.start} /></div></main>
       {step > 0 && step < 7 && <footer style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: mob ? "10px 12px" : "12px 24px", background: B.white, borderTop: `1px solid ${B.g200}`, flexShrink: 0 }}>
         <Btn secondary onClick={() => nav(Math.max(0, step - 1))} style={mob ? { padding: "8px 14px", fontSize: "12px" } : {}}><ChevR s={14} c={B.g500} rot={180} /> Back</Btn>
         {!mob && <span style={{ fontSize: "12px", color: B.g500 }}>Workflow • Step {step} of 6</span>}
