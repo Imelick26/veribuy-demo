@@ -676,7 +676,7 @@ const findings = [
   { sev: "Moderate", Icon: Eye, c: B.black, bg: B.ynBg, bd: B.ynBd, t: "Driver Seat Tear — Leather Bolster", desc: "1.5-inch tear on driver seat outer bolster. Consistent with entry/exit wear. Not structural but affects perceived condition.", ev: "Photo evidence", repair: "$200 – $350", impact: "Cosmetic — affects retail presentation" },
 ];
 
-const P4 = () => {
+const P4 = ({ mob }) => {
   const [open, setOpen] = useState(-1);
   const [rev, setRev] = useState(0);
   const [histAdded, setHistAdded] = useState(false);
@@ -692,13 +692,13 @@ const P4 = () => {
   };
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-      <h2 style={{ fontSize: "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Inspection Findings</h2>
+      <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Inspection Findings</h2>
       <p style={{ color: B.g500, fontSize: "14px", marginBottom: "20px" }}>Verified findings from guided inspection and AI analysis.</p>
       {/* ── Condition Score Card ── */}
       <Card style={{ marginBottom: "16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-          <div style={{ textAlign: "center", padding: "16px 28px", borderRadius: "12px", background: scBg }}>
-            <div style={{ fontSize: "42px", fontWeight: 800, color: sc }}>{score}</div>
+        <div style={{ display: "flex", alignItems: "center", gap: mob ? "14px" : "24px", flexDirection: mob ? "column" : "row" }}>
+          <div style={{ textAlign: "center", padding: mob ? "12px 20px" : "16px 28px", borderRadius: "12px", background: scBg, width: mob ? "100%" : "auto" }}>
+            <div style={{ fontSize: mob ? "32px" : "42px", fontWeight: 800, color: sc }}>{score}</div>
             <div style={{ fontSize: "11px", fontWeight: 600, color: sc }}>Condition Score</div>
           </div>
           <div style={{ flex: 1 }}>
@@ -726,7 +726,7 @@ const P4 = () => {
                 <button onClick={() => setOpen(isO ? -1 : i)} style={{ width: "100%", display: "flex", alignItems: "center", gap: "12px", padding: "14px 18px", background: "none", border: "none", cursor: "pointer", textAlign: "left" }}>
                   <div style={{ width: 34, height: 34, borderRadius: "8px", background: f.bg, border: `1px solid ${f.bd}`, display: "flex", alignItems: "center", justifyContent: "center" }}><f.Icon s={16} c={f.c} /></div>
                   <div style={{ flex: 1 }}><div style={{ display: "flex", alignItems: "center", gap: "8px" }}><span style={{ fontSize: "14px", fontWeight: 600, color: B.g900 }}>{f.t}</span><SevPill sev={f.sev} /></div></div>
-                  <span style={{ fontSize: "11px", color: B.g500, flexShrink: 0 }}>{f.ev}</span>
+                  {!mob && <span style={{ fontSize: "11px", color: B.g500, flexShrink: 0 }}>{f.ev}</span>}
                 </button>
                 {isO && <div style={{ padding: "0 18px 18px 64px", animation: "su 0.25s ease" }}>
                   <p style={{ fontSize: "13px", color: B.g700, lineHeight: 1.6, marginBottom: "10px" }}>{f.desc}</p>
@@ -752,13 +752,13 @@ const P4 = () => {
         </div>
         {!histAdded && !histLoading && (
           <Card style={{ background: B.g50, borderStyle: "dashed", borderColor: B.g300 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <div style={{ width: 42, height: 42, borderRadius: "10px", background: B.white, border: `1px solid ${B.g200}`, display: "flex", alignItems: "center", justifyContent: "center" }}><HistIc s={20} c={B.g500} /></div>
-              <div style={{ flex: 1 }}>
-                <div style={{ fontSize: "14px", fontWeight: 600, color: B.g900, marginBottom: "2px" }}>Strengthen Your Verification</div>
+            <div style={{ display: "flex", alignItems: "center", gap: mob ? "10px" : "16px", flexDirection: mob ? "column" : "row" }}>
+              {!mob && <div style={{ width: 42, height: 42, borderRadius: "10px", background: B.white, border: `1px solid ${B.g200}`, display: "flex", alignItems: "center", justifyContent: "center" }}><HistIc s={20} c={B.g500} /></div>}
+              <div style={{ flex: 1, textAlign: mob ? "center" : "left" }}>
+                <div style={{ fontSize: mob ? "13px" : "14px", fontWeight: 600, color: B.g900, marginBottom: "2px" }}>Strengthen Your Verification</div>
                 <div style={{ fontSize: "12px", color: B.g500, lineHeight: 1.5 }}>Add a vehicle history report to refine confidence in the assessment. Physical inspection remains the primary source of truth.</div>
               </div>
-              <Btn secondary onClick={handleAddHistory} style={{ flexShrink: 0, fontSize: "13px" }}><FileIc s={14} c={B.g500} /> Add Vehicle History</Btn>
+              <Btn secondary onClick={handleAddHistory} style={{ flexShrink: 0, fontSize: "13px", width: mob ? "100%" : "auto", justifyContent: "center" }}><FileIc s={14} c={B.g500} /> Add Vehicle History</Btn>
             </div>
           </Card>
         )}
@@ -833,13 +833,13 @@ const P4 = () => {
 };
 
 /* ═══ PAGE 5: MARKET ANALYSIS ═══ */
-const P5 = () => (
+const P5 = ({ mob }) => (
   <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-    <h2 style={{ fontSize: "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
+    <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
     <p style={{ color: B.g500, fontSize: "14px", marginBottom: "20px" }}>Market benchmarks and condition-adjusted pricing for acquisition decision.</p>
     <Card style={{ marginBottom: "14px" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}><Dollar s={16} c={B.brand} /><span style={{ fontSize: "14px", fontWeight: 700 }}>Comparable Listings</span></div>
-      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: mob ? "12px" : "inherit" }}>
         <thead><tr style={{ borderTop: `2px solid ${B.red}`, borderBottom: `2px solid ${B.brand}` }}><th style={{ textAlign: "left", padding: "8px 10px", fontSize: "11px", fontWeight: 600, color: B.g500 }}>Source</th><th style={{ textAlign: "right", padding: "8px 10px", fontSize: "11px", fontWeight: 600, color: B.g500 }}>Avg Price</th><th style={{ textAlign: "right", padding: "8px 10px", fontSize: "11px", fontWeight: 600, color: B.g500 }}>Listings</th><th style={{ textAlign: "right", padding: "8px 10px", fontSize: "11px", fontWeight: 600, color: B.g500 }}>Market</th></tr></thead>
         <tbody>{[["AutoTrader","$23,495","28","Portland, OR"],["Cars.com","$24,200","34","Eugene, OR"],["Wholesale","$20,100","12","PNW Region"]].map(([s,p,n,m],i) => (
           <tr key={i} style={{ borderBottom: `1px solid ${B.g100}` }}><td style={{ padding: "10px", fontSize: "13px", fontWeight: 600 }}>{s}</td><td style={{ padding: "10px", fontSize: "13px", textAlign: "right", fontWeight: 600 }}>{p}</td><td style={{ padding: "10px", fontSize: "13px", textAlign: "right", color: B.g500 }}>{n}</td><td style={{ padding: "10px", fontSize: "13px", textAlign: "right", color: B.g500 }}>{m}</td></tr>
@@ -860,11 +860,11 @@ const P5 = () => (
       </div>
       <div style={{ marginTop: "20px", padding: "24px", borderRadius: "12px", background: B.g50, textAlign: "center" }}>
         <Label>Recommended Max Acquisition</Label>
-        <div style={{ fontSize: "46px", fontWeight: 800, color: B.g900, letterSpacing: "-2px" }}>$15,275</div>
+        <div style={{ fontSize: mob ? "32px" : "46px", fontWeight: 800, color: B.g900, letterSpacing: "-2px" }}>$15,275</div>
         <div style={{ width: "60px", height: "2px", background: B.red, margin: "6px auto 12px" }} />
         <div style={{ fontSize: "13px", color: B.g500 }}>Based on $24,100 avg retail (clean) minus $4,825 estimated reconditioning.</div>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "12px", marginTop: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr 1fr", gap: mob ? "8px" : "12px", marginTop: "16px" }}>
         <div style={{ padding: "14px", borderRadius: "10px", background: B.okBg, border: `1px solid ${B.okBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.ok, fontWeight: 600, marginBottom: "4px" }}>Strong Buy</div><div style={{ fontSize: "13px", fontWeight: 700 }}>≤ $14,000</div></div>
         <div style={{ padding: "14px", borderRadius: "10px", background: B.okBg, border: `1px solid ${B.okBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.ok, fontWeight: 600, marginBottom: "4px" }}>Fair Buy</div><div style={{ fontSize: "13px", fontWeight: 700 }}>$14K – $15.3K</div></div>
         <div style={{ padding: "14px", borderRadius: "10px", background: B.g50, border: `1px solid ${B.g200}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.g500, fontWeight: 600, marginBottom: "4px" }}>Overpaying</div><div style={{ fontSize: "13px", fontWeight: 700 }}>&gt; $15,300</div></div>
