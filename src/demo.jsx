@@ -874,7 +874,7 @@ const P5 = ({ mob }) => (
 );
 
 /* ═══ PAGE 6: REPORT ═══ */
-const P6 = () => {
+const P6 = ({ mob }) => {
   const [rev, setRev] = useState(0);
   useEffect(() => { let i = 0; const iv = setInterval(() => { i++; setRev(i); if (i >= 7) clearInterval(iv); }, 150); return () => clearInterval(iv); }, []);
   const rptDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -882,15 +882,15 @@ const P6 = () => {
   return (
     <div style={{ maxWidth: "720px", margin: "0 auto" }}>
       {/* PDF Document */}
-      <div style={{ background: B.white, borderRadius: "4px", boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08)", padding: "48px 48px 40px", position: "relative", overflow: "hidden" }}>
+      <div style={{ background: B.white, borderRadius: "4px", boxShadow: "0 4px 24px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.08)", padding: mob ? "20px 16px 20px" : "48px 48px 40px", position: "relative", overflow: "hidden" }}>
         {/* Header */}
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px", ...S(0) }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px", flexDirection: mob ? "column" : "row", gap: mob ? "10px" : "0", ...S(0) }}>
           <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
             <img src={logoSrc} alt="VeriBuy" style={{ width: 36, height: 36, borderRadius: "8px", objectFit: "contain" }} />
             <div><div style={{ fontSize: "14px", fontWeight: 800, color: B.g900 }}>VeriBuy</div><div style={{ fontSize: "10px", color: B.g500 }}>Verified Condition Report</div></div>
           </div>
           <div style={{ textAlign: "right" }}>
-            <div style={{ fontSize: "16px", fontWeight: 800, color: B.g900, letterSpacing: "0.5px" }}>VEHICLE CONDITION REPORT</div>
+            <div style={{ fontSize: mob ? "12px" : "16px", fontWeight: 800, color: B.g900, letterSpacing: "0.5px" }}>VEHICLE CONDITION REPORT</div>
             <div style={{ fontSize: "10px", color: B.g500, marginTop: "2px" }}>Report #VB-2024-18247 • {rptDate}</div>
           </div>
         </div>
@@ -906,7 +906,7 @@ const P6 = () => {
         </div>
 
         {/* Vehicle Summary */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px", marginBottom: "20px", ...S(2) }}>
+        <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr 1fr", gap: "8px", marginBottom: "20px", ...S(2) }}>
           {[["Year / Make / Model", "2024 Ford Bronco Sport"], ["Trim / Body / Drive", "Base • 4D SUV • AWD"], ["Mileage / MSRP", "21,340 mi • $29,395"]].map(([k, v], i) => (
             <div key={i} style={{ padding: "10px 12px", background: B.g50, borderRadius: "6px" }}>
               <div style={{ fontSize: "10px", color: B.g500, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.3px", marginBottom: "3px" }}>{k}</div>
@@ -918,15 +918,15 @@ const P6 = () => {
         {/* Condition Assessment */}
         <div style={{ marginBottom: "20px", ...S(3) }}>
           <div style={{ fontSize: "12px", fontWeight: 700, color: B.g900, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "12px", borderBottom: `1px solid ${B.g200}`, paddingBottom: "6px" }}>Condition Assessment</div>
-          <div style={{ display: "flex", gap: "20px", alignItems: "center", marginBottom: "14px" }}>
-            <div style={{ textAlign: "center", padding: "14px 22px", borderRadius: "10px", background: B.ynBg, border: `1px solid ${B.ynBd}` }}>
-              <div style={{ fontSize: "36px", fontWeight: 800, color: B.ynT }}>64</div>
+          <div style={{ display: "flex", gap: mob ? "12px" : "20px", alignItems: "center", marginBottom: "14px", flexDirection: mob ? "column" : "row" }}>
+            <div style={{ textAlign: "center", padding: mob ? "10px 16px" : "14px 22px", borderRadius: "10px", background: B.ynBg, border: `1px solid ${B.ynBd}`, width: mob ? "100%" : "auto" }}>
+              <div style={{ fontSize: mob ? "28px" : "36px", fontWeight: 800, color: B.ynT }}>64</div>
               <div style={{ fontSize: "10px", fontWeight: 600, color: B.ynT }}>Condition Score</div>
             </div>
             <div style={{ flex: 1 }}>
               {[["Structural / Drivetrain", 42, B.red], ["Cosmetic / Interior", 78, B.ok], ["Electronics / Software", 65, B.brand]].map(([l, v, c], i) => (
                 <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "6px" }}>
-                  <div style={{ fontSize: "11px", color: B.g700, width: "130px" }}>{l}</div>
+                  <div style={{ fontSize: "11px", color: B.g700, width: mob ? "100px" : "130px" }}>{l}</div>
                   <div style={{ flex: 1 }}><PBar v={v} c={c} /></div>
                   <div style={{ fontSize: "11px", fontWeight: 600, color: c, width: "40px", textAlign: "right" }}>{v}/100</div>
                 </div>
@@ -966,7 +966,7 @@ const P6 = () => {
         <div style={{ marginBottom: "20px", ...S(5) }}>
           <div style={{ padding: "20px", borderRadius: "10px", background: B.g50, border: `1px solid ${B.g200}`, textAlign: "center" }}>
             <div style={{ fontSize: "10px", fontWeight: 600, color: B.g500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>Recommended Max Acquisition</div>
-            <div style={{ fontSize: "38px", fontWeight: 800, color: B.g900, letterSpacing: "-1px" }}>$15,275</div>
+            <div style={{ fontSize: mob ? "28px" : "38px", fontWeight: 800, color: B.g900, letterSpacing: "-1px" }}>$15,275</div>
             <div style={{ width: 50, height: 2, background: B.red, margin: "6px auto 10px" }} />
             <div style={{ fontSize: "11px", color: B.g500, marginBottom: "12px" }}>Based on $24,100 avg retail minus $4,825 estimated reconditioning.</div>
             <div style={{ padding: "10px 14px", borderRadius: "8px", background: B.redBg, border: `1px solid ${B.redBd}`, fontSize: "12px", color: B.red, fontWeight: 600, display: "inline-block" }}>High-risk acquisition above $15,275 — head gasket and fuel injector issues require resolution.</div>
@@ -981,21 +981,21 @@ const P6 = () => {
       </div>
 
       {/* Action buttons (outside the document) */}
-      <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "20px" }}>
-        <Btn><DL s={16} c="#fff" /> Download PDF</Btn>
-        <Btn secondary><FileIc s={16} c={B.g500} /> Share Report</Btn>
+      <div style={{ display: "flex", gap: "10px", justifyContent: "center", marginTop: "20px", flexDirection: mob ? "column" : "row" }}>
+        <Btn style={mob ? { width: "100%", justifyContent: "center" } : {}}><DL s={16} c="#fff" /> Download PDF</Btn>
+        <Btn secondary style={mob ? { width: "100%", justifyContent: "center" } : {}}><FileIc s={16} c={B.g500} /> Share Report</Btn>
       </div>
     </div>
   );
 };
 
 /* ═══ PAGE 7: FINAL ═══ */
-const P7 = ({ go }) => (
+const P7 = ({ go, mob }) => (
   <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh", textAlign: "center" }}>
     <div style={{ width: 56, height: 56, borderRadius: "14px", background: B.brandGrad, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}><Check s={28} c="#fff" /></div>
-    <h1 style={{ fontSize: "30px", fontWeight: 700, color: B.g900, margin: "0 0 12px" }}>The Complete Picture, Before You Buy</h1>
-    <p style={{ fontSize: "16px", color: B.g500, margin: "0 0 36px", maxWidth: "460px", lineHeight: 1.6 }}>VeriBuy gives your acquisition team the intelligence they need to make confident, data-backed decisions on every vehicle.</p>
-    <div style={{ display: "flex", gap: "12px" }}><Btn primary>Request Dealer Pilot</Btn><Btn secondary onClick={() => go(0)}>Restart Demo</Btn></div>
+    <h1 style={{ fontSize: mob ? "22px" : "30px", fontWeight: 700, color: B.g900, margin: "0 0 12px" }}>The Complete Picture, Before You Buy</h1>
+    <p style={{ fontSize: mob ? "14px" : "16px", color: B.g500, margin: "0 0 36px", maxWidth: "460px", lineHeight: 1.6, padding: mob ? "0 12px" : "0" }}>VeriBuy gives your acquisition team the intelligence they need to make confident, data-backed decisions on every vehicle.</p>
+    <div style={{ display: "flex", gap: "12px", flexDirection: mob ? "column" : "row", width: mob ? "100%" : "auto", padding: mob ? "0 16px" : "0" }}><Btn primary style={mob ? { width: "100%", justifyContent: "center" } : {}}>Request Dealer Pilot</Btn><Btn secondary onClick={() => go(0)} style={mob ? { width: "100%", justifyContent: "center" } : {}}>Restart Demo</Btn></div>
   </div>
 );
 
