@@ -142,6 +142,27 @@ function stopBgMusic() {
   } catch(e) {}
 }
 
+/* ═══ AUTO-SCROLL HOOK ═══ */
+function useAutoScroll(delays) {
+  /* delays = [[delayMs, scrollTarget], ...] where scrollTarget is "bottom" or pixel value */
+  useEffect(() => {
+    const main = document.querySelector("main");
+    if (!main) return;
+    const timers = delays.map(([delay, target]) =>
+      setTimeout(() => {
+        if (target === "bottom") {
+          main.scrollTo({ top: main.scrollHeight, behavior: "smooth" });
+        } else if (typeof target === "number") {
+          main.scrollBy({ top: target, behavior: "smooth" });
+        }
+      }, delay)
+    );
+    // Start at top
+    main.scrollTo({ top: 0, behavior: "auto" });
+    return () => timers.forEach(clearTimeout);
+  }, []);
+}
+
 /* ═══ TOKENS ═══ */
 const B = {
   brand: "#5C0099", brandH: "#46006d", brandBg: "#F3ECFA", brandBd: "#D4BFE8",
@@ -804,10 +825,10 @@ const P2 = ({ mob }) => {
   const [rev, setRev] = useState(0);
   useEffect(() => {
     const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
-    // Auto-expand the first critical risk (head gasket) after risks load
     const autoExpand = setTimeout(() => setSel(0), 2800);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); };
   }, []);
+  useAutoScroll([[4000, 300], [8000, 400]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
@@ -1064,10 +1085,17 @@ const P4 = ({ mob }) => {
   const [histLoading, setHistLoading] = useState(false);
   useEffect(() => {
     const t = findings.map((_, i) => setTimeout(() => setRev(i + 1), 400 + i * 400));
-    // Auto-expand the head gasket finding
     const autoOpen = setTimeout(() => setOpen(0), 2000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoOpen); };
   }, []);
+  useAutoScroll([[3000, 250]]);
+  /* Auto-scroll when history is added */
+  useEffect(() => {
+    if (histAdded) {
+      const main = document.querySelector("main");
+      if (main) setTimeout(() => main.scrollTo({ top: main.scrollHeight, behavior: "smooth" }), 300);
+    }
+  }, [histAdded]);
   const score = 64, sc = score < 50 ? B.red : score < 75 ? B.black : B.ok, scBg = score < 50 ? B.redBg : score < 75 ? B.ynBg : B.okBg;
   const handleAddHistory = () => {
     setHistLoading(true);
@@ -1216,7 +1244,9 @@ const P4 = ({ mob }) => {
 };
 
 /* ═══ PAGE 5: MARKET ANALYSIS ═══ */
-const P5 = ({ mob }) => (
+const P5 = ({ mob }) => {
+  useAutoScroll([[3000, 350], [7000, "bottom"]]);
+  return (
   <div style={{ maxWidth: "720px", margin: "0 auto" }}>
     <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
     <p style={{ color: B.g500, fontSize: "14px", marginBottom: "20px" }}>Market benchmarks and condition-adjusted pricing for acquisition decision.</p>
@@ -1254,12 +1284,14 @@ const P5 = ({ mob }) => (
       </div>
     </Card>
   </div>
-);
+  );
+};
 
 /* ═══ PAGE 6: REPORT ═══ */
 const P6 = ({ mob }) => {
   const [rev, setRev] = useState(0);
   useEffect(() => { let i = 0; const iv = setInterval(() => { i++; setRev(i); if (i >= 7) clearInterval(iv); }, 150); return () => clearInterval(iv); }, []);
+  useAutoScroll([[2000, 300], [5000, 400], [8000, "bottom"]]);
   const rptDate = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   const S = (n, d) => rev >= n ? { animation: `fadeIn 0.4s ease`, opacity: 1 } : { opacity: 0 };
   return (
