@@ -525,36 +525,171 @@ const P0 = ({ go, mob }) => {
   const [phase, setPhase] = useState(0);
   const [dealer, setDealer] = useState("");
   const [pass, setPass] = useState("");
+  const [storyBeat, setStoryBeat] = useState(0);
+  const [issueIdx, setIssueIdx] = useState(-1);
   const fullDealer = "premier_ford";
   const fullPass = "••••••••••";
+
+  /* Story auto-advance: scenes 0-3, then login phases 4-6, then welcome 7 */
   useEffect(() => {
-    if (phase === 0) { let i = 0; const iv = setInterval(() => { i++; setDealer(fullDealer.slice(0, i)); if (i >= fullDealer.length) { clearInterval(iv); setTimeout(() => setPhase(1), 400); } }, 70); return () => clearInterval(iv); }
+    if (phase === 0) {
+      /* Scene 1: "Every dealership has been there" — hold for narration */
+      const t1 = setTimeout(() => setStoryBeat(1), 3000);
+      const t2 = setTimeout(() => setPhase(1), 8000);
+      return () => { clearTimeout(t1); clearTimeout(t2); };
+    }
   }, [phase]);
   useEffect(() => {
-    if (phase === 1) { let i = 0; const iv = setInterval(() => { i++; setPass(fullPass.slice(0, i)); if (i >= fullPass.length) { clearInterval(iv); setTimeout(() => setPhase(2), 500); } }, 90); return () => clearInterval(iv); }
+    if (phase === 1) {
+      /* Scene 2: "On the surface, everything checks out" */
+      const t = setTimeout(() => setPhase(2), 7000);
+      return () => clearTimeout(t);
+    }
   }, [phase]);
-  useEffect(() => { if (phase === 2) { const t = setTimeout(() => setPhase(3), 1400); return () => clearTimeout(t); } }, [phase]);
-  if (phase < 3) return (
-    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh" }}>
+  useEffect(() => {
+    if (phase === 2) {
+      /* Scene 3: "But then recon starts..." — issues appear one by one */
+      const t0 = setTimeout(() => setIssueIdx(0), 1500);
+      const t1 = setTimeout(() => setIssueIdx(1), 3500);
+      const t2 = setTimeout(() => setIssueIdx(2), 5500);
+      const t3 = setTimeout(() => setPhase(3), 9000);
+      return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+    }
+  }, [phase]);
+  useEffect(() => {
+    if (phase === 3) {
+      /* Scene 4: "That's the gap VeriBuy was built to solve" */
+      const t = setTimeout(() => setPhase(4), 10000);
+      return () => clearTimeout(t);
+    }
+  }, [phase]);
+  /* Login typing animations */
+  useEffect(() => {
+    if (phase === 4) { let i = 0; const iv = setInterval(() => { i++; setDealer(fullDealer.slice(0, i)); if (i >= fullDealer.length) { clearInterval(iv); setTimeout(() => setPhase(5), 400); } }, 70); return () => clearInterval(iv); }
+  }, [phase]);
+  useEffect(() => {
+    if (phase === 5) { let i = 0; const iv = setInterval(() => { i++; setPass(fullPass.slice(0, i)); if (i >= fullPass.length) { clearInterval(iv); setTimeout(() => setPhase(6), 500); } }, 90); return () => clearInterval(iv); }
+  }, [phase]);
+  useEffect(() => { if (phase === 6) { const t = setTimeout(() => setPhase(7), 1400); return () => clearTimeout(t); } }, [phase]);
+  /* ═══ STORY SCENES (phases 0-3) ═══ */
+  if (phase <= 3) {
+    const issues = [
+      { icon: Tri, text: "A blown head gasket", cost: "$4,200+", c: B.crit },
+      { icon: Circ, text: "An open recall", cost: "Undisclosed", c: B.orange },
+      { icon: Eye, text: "A hidden issue no walk-around caught", cost: "Unknown", c: B.brand },
+    ];
+    return (
+      <div style={{ position: "relative", minHeight: "70vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", textAlign: "center", overflow: "hidden", borderRadius: "16px", margin: mob ? "-8px -4px" : "-12px -16px", padding: mob ? "40px 20px" : "48px 32px" }}>
+        {/* Background layers */}
+        <div style={{ position: "absolute", inset: 0, background: phase < 2 ? "linear-gradient(180deg, #0f0f14 0%, #1a1a24 50%, #12121a 100%)" : phase === 2 ? "linear-gradient(180deg, #1a0808 0%, #1f0f0f 50%, #12121a 100%)" : "linear-gradient(180deg, #1a0035 0%, #2d0060 50%, #1a0035 100%)", transition: "background 1.5s ease", zIndex: 0 }} />
+        {/* Subtle grid overlay */}
+        <div style={{ position: "absolute", inset: 0, backgroundImage: "radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px)", backgroundSize: "32px 32px", zIndex: 1 }} />
+
+        {/* Scene 0: "Every dealership has been there" */}
+        {phase === 0 && (
+          <div style={{ position: "relative", zIndex: 2, animation: "fadeIn 1s ease" }}>
+            <div style={{ fontSize: mob ? "11px" : "12px", fontWeight: 600, color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "3px", marginBottom: "24px" }}>The Acquisition Problem</div>
+            <h1 style={{ fontSize: mob ? "26px" : "42px", fontWeight: 700, color: "#fff", margin: "0 0 16px", maxWidth: "600px", lineHeight: 1.25 }}>Every dealership has been there.</h1>
+            <p style={{ fontSize: mob ? "14px" : "17px", color: "rgba(255,255,255,0.6)", margin: "0", maxWidth: "520px", lineHeight: 1.7, animation: storyBeat >= 1 ? "fadeIn 0.8s ease" : "none", opacity: storyBeat >= 1 ? 1 : 0 }}>A vehicle rolls onto the lot — low miles, popular model — and it looks like a strong purchase.</p>
+            {/* Subtle bronco silhouette in background */}
+            <img src={broncoSrc} alt="" style={{ position: "absolute", bottom: "-120px", right: mob ? "-60px" : "-100px", width: mob ? "300px" : "500px", opacity: 0.06, filter: "blur(1px)", pointerEvents: "none" }} />
+          </div>
+        )}
+
+        {/* Scene 1: "On the surface, everything checks out" */}
+        {phase === 1 && (
+          <div style={{ position: "relative", zIndex: 2, animation: "fadeIn 0.8s ease" }}>
+            <div style={{ marginBottom: "28px" }}>
+              <img src={broncoSrc} alt="Vehicle" style={{ width: mob ? "240px" : "360px", height: "auto", filter: "drop-shadow(0 8px 24px rgba(0,0,0,0.5))", animation: "scaleIn 0.8s ease" }} />
+            </div>
+            <h2 style={{ fontSize: mob ? "22px" : "34px", fontWeight: 700, color: "#fff", margin: "0 0 12px", maxWidth: "550px", lineHeight: 1.3 }}>On the surface, everything checks out.</h2>
+            <p style={{ fontSize: mob ? "13px" : "16px", color: "rgba(255,255,255,0.55)", margin: "0", maxWidth: "480px", lineHeight: 1.65 }}>The kind of car or truck that should move fast and generate solid profit margin.</p>
+            {/* Subtle green indicators */}
+            <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "24px", animation: "fadeIn 1s ease 1s both" }}>
+              {["Low Miles", "Clean Body", "Popular Model"].map((t, i) => (
+                <div key={i} style={{ padding: "6px 14px", borderRadius: "20px", background: "rgba(22,163,74,0.15)", border: "1px solid rgba(22,163,74,0.3)", fontSize: "11px", fontWeight: 600, color: B.ok }}>{t}</div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Scene 2: "But then recon starts..." */}
+        {phase === 2 && (
+          <div style={{ position: "relative", zIndex: 2, animation: "fadeIn 0.8s ease" }}>
+            <h2 style={{ fontSize: mob ? "22px" : "34px", fontWeight: 700, color: "#fff", margin: "0 0 8px", maxWidth: "550px", lineHeight: 1.3 }}>But then recon starts…</h2>
+            <p style={{ fontSize: mob ? "13px" : "16px", color: "rgba(255,255,255,0.45)", margin: "0 0 32px", maxWidth: "480px", lineHeight: 1.6 }}>…and the real story shows up.</p>
+            {/* Issues appearing one by one */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "12px", maxWidth: "400px", margin: "0 auto" }}>
+              {issues.map((iss, i) => (
+                <div key={i} style={{
+                  display: "flex", alignItems: "center", gap: "14px",
+                  padding: "14px 20px", borderRadius: "12px",
+                  background: i <= issueIdx ? "rgba(255,255,255,0.06)" : "transparent",
+                  border: `1px solid ${i <= issueIdx ? iss.c + "50" : "transparent"}`,
+                  opacity: i <= issueIdx ? 1 : 0,
+                  transform: i <= issueIdx ? "translateX(0)" : "translateX(-20px)",
+                  transition: "all 0.6s ease",
+                }}>
+                  <div style={{ width: 40, height: 40, borderRadius: "10px", background: iss.c + "20", border: `1px solid ${iss.c}40`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <iss.icon s={18} c={iss.c} />
+                  </div>
+                  <div style={{ textAlign: "left" }}>
+                    <div style={{ fontSize: "14px", fontWeight: 600, color: "#fff" }}>{iss.text}</div>
+                    <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.4)" }}>Hidden cost: <span style={{ color: iss.c, fontWeight: 600 }}>{iss.cost}</span></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: mob ? "13px" : "15px", color: B.red, fontWeight: 600, marginTop: "28px", opacity: issueIdx >= 2 ? 1 : 0, transition: "opacity 0.6s ease", animation: issueIdx >= 2 ? "fadeIn 0.6s ease" : "none" }}>That purchase is underwater before it's even listed.</p>
+          </div>
+        )}
+
+        {/* Scene 3: "That's the gap VeriBuy was built to solve" */}
+        {phase === 3 && (
+          <div style={{ position: "relative", zIndex: 2, animation: "fadeIn 0.8s ease" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "24px", justifyContent: "center", animation: "scaleIn 0.6s ease" }}>
+              <img src={logoSrc} alt="VeriBuy" style={{ width: 56, height: 56, borderRadius: "14px", objectFit: "contain", boxShadow: "0 4px 20px rgba(92,0,153,0.4)" }} />
+              <span style={{ fontSize: mob ? "28px" : "36px", fontWeight: 800, color: "#fff" }}>VeriBuy</span>
+            </div>
+            <h2 style={{ fontSize: mob ? "20px" : "30px", fontWeight: 700, color: "#fff", margin: "0 0 16px", maxWidth: "550px", lineHeight: 1.3 }}>That's the gap VeriBuy was built to solve.</h2>
+            <p style={{ fontSize: mob ? "13px" : "16px", color: "rgba(255,255,255,0.6)", margin: "0 0 8px", maxWidth: "520px", lineHeight: 1.65, animation: "fadeIn 0.8s ease 1s both" }}>A vehicle acquisition intelligence platform that combines VIN intelligence, guided inspection workflows, and live market pricing.</p>
+            <p style={{ fontSize: mob ? "14px" : "17px", color: "rgba(255,255,255,0.85)", fontWeight: 600, margin: "0 0 32px", maxWidth: "480px", lineHeight: 1.5, animation: "fadeIn 0.8s ease 3s both" }}>Because the best time to discover a problem with a vehicle… is before you buy it.</p>
+            <div style={{ fontSize: mob ? "13px" : "15px", color: B.brand, fontWeight: 600, animation: "fadeIn 0.8s ease 5.5s both", display: "flex", alignItems: "center", gap: "8px", justifyContent: "center" }}>
+              <span style={{ width: 24, height: 1, background: B.brand }} />
+              Let's walk through how it works
+              <span style={{ width: 24, height: 1, background: B.brand }} />
+            </div>
+          </div>
+        )}
+
+        {/* Click to advance hint */}
+        {phase <= 3 && <div style={{ position: "absolute", bottom: mob ? "16px" : "24px", left: "50%", transform: "translateX(-50%)", fontSize: "11px", color: "rgba(255,255,255,0.2)", zIndex: 3, cursor: "pointer" }} onClick={() => setPhase(p => Math.min(p + 1, 4))}>Click to advance →</div>}
+      </div>
+    );
+  }
+
+  /* ═══ LOGIN (phases 4-6) ═══ */
+  if (phase >= 4 && phase < 7) return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh", animation: "fadeIn 0.6s ease" }}>
       <div style={{ width: "100%", maxWidth: "400px" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "32px", justifyContent: "center" }}>
           <img src={logoSrc} alt="VeriBuy" style={{ width: 44, height: 44, borderRadius: "12px", objectFit: "contain" }} />
           <div><div style={{ fontSize: "20px", fontWeight: 800, color: B.g900 }}>VeriBuy</div><div style={{ fontSize: "11px", color: B.g500, fontWeight: 500 }}>Dealer Portal</div></div>
         </div>
         <Card style={{ padding: "28px" }}>
-          {phase < 2 ? <>
+          {phase < 6 ? <>
             <div style={{ marginBottom: "18px" }}>
               <div style={{ fontSize: "11px", fontWeight: 600, color: B.g500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>Dealer ID</div>
-              <div style={{ display: "flex", alignItems: "center", padding: "12px 14px", borderRadius: "8px", background: B.g50, border: `1px solid ${phase === 0 ? B.brand : B.g200}`, minHeight: "44px" }}>
+              <div style={{ display: "flex", alignItems: "center", padding: "12px 14px", borderRadius: "8px", background: B.g50, border: `1px solid ${phase === 4 ? B.brand : B.g200}`, minHeight: "44px" }}>
                 <span style={{ fontSize: "14px", fontWeight: 500, color: B.g900, fontFamily: "monospace" }}>{dealer}</span>
-                {phase === 0 && <span style={{ width: 2, height: 18, background: B.brand, marginLeft: 1, animation: "tc 1s step-end infinite" }} />}
+                {phase === 4 && <span style={{ width: 2, height: 18, background: B.brand, marginLeft: 1, animation: "tc 1s step-end infinite" }} />}
               </div>
             </div>
             <div style={{ marginBottom: "22px" }}>
               <div style={{ fontSize: "11px", fontWeight: 600, color: B.g500, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "6px" }}>Password</div>
-              <div style={{ display: "flex", alignItems: "center", padding: "12px 14px", borderRadius: "8px", background: B.g50, border: `1px solid ${phase === 1 ? B.brand : B.g200}`, minHeight: "44px" }}>
+              <div style={{ display: "flex", alignItems: "center", padding: "12px 14px", borderRadius: "8px", background: B.g50, border: `1px solid ${phase === 5 ? B.brand : B.g200}`, minHeight: "44px" }}>
                 <span style={{ fontSize: "14px", fontWeight: 500, color: B.g900, letterSpacing: "2px" }}>{pass}</span>
-                {phase === 1 && <span style={{ width: 2, height: 18, background: B.brand, marginLeft: 1, animation: "tc 1s step-end infinite" }} />}
+                {phase === 5 && <span style={{ width: 2, height: 18, background: B.brand, marginLeft: 1, animation: "tc 1s step-end infinite" }} />}
               </div>
             </div>
             <div style={{ padding: "12px 24px", borderRadius: "10px", background: B.g200, color: B.g500, fontSize: "14px", fontWeight: 600, textAlign: "center" }}>Sign In</div>
@@ -579,9 +714,6 @@ const P0 = ({ go, mob }) => {
       <div style={{ fontSize: "13px", color: B.ok, fontWeight: 600, marginBottom: "28px", animation: "scaleIn 0.4s ease" }}>Welcome, Premier Ford Dealership</div>
       <h1 style={{ fontSize: mob ? "22px" : "32px", fontWeight: 700, color: B.g900, margin: "0 0 14px", maxWidth: "580px", lineHeight: 1.2 }}>Pre-Purchase Vehicle Intelligence</h1>
       <p style={{ fontSize: mob ? "13px" : "15px", color: B.g700, margin: "0 0 20px", maxWidth: "520px", lineHeight: 1.65, padding: mob ? "0 8px" : "0" }}>VIN-specific risk intelligence, guided inspection capture, and live market pricing — producing verified condition reports for data-backed acquisition decisions.</p>
-
-      {/* Animated pain point ticker — cycles through real scenarios */}
-      <PainPointTicker mob={mob} />
 
       <div style={{ display: "flex", gap: mob ? "10px" : "16px", marginBottom: "36px", flexWrap: "wrap", justifyContent: "center", flexDirection: mob ? "column" : "row", alignItems: mob ? "center" : "stretch", padding: mob ? "0 8px" : "0" }}>
         {[[Tri, "Guided Inspection", "Structured capture identifies issues photos alone miss."],
