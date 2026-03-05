@@ -403,15 +403,19 @@ const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
         <div style={{width:16,height:16,border:"2px solid "+B.g200,borderTopColor:B.brand,borderRadius:"50%",animation:"spin 1s linear infinite"}}/>
         Loading 3D model…
       </div>}
-      {!loading && hsp.filter(h=>h.visible && activeRisk===h.id).map(h=>(
+      {!loading && hsp.filter(h=>h.visible).map(h=>{
+        const isActive = activeRisk===h.id;
+        return (
         <button key={h.id} onClick={()=>onSpotClick?.(h.id)} style={{
           position:"absolute",left:h.sx+"px",top:h.sy+"px",transform:"translate(-50%,-50%)",
-          width:activeRisk===h.id?20:12,height:activeRisk===h.id?20:12,borderRadius:"50%",
-          border:`1px solid ${h.color}`,background:activeRisk===h.id?h.color+"25":"rgba(255,255,255,0.35)",
+          width:isActive?22:10,height:isActive?22:10,borderRadius:"50%",
+          border:`1.5px solid ${h.color}`,background:isActive?h.color+"30":"rgba(255,255,255,0.25)",
           cursor:"pointer",transition:"all 0.3s ease",display:"flex",alignItems:"center",justifyContent:"center",
-          boxShadow:`0 0 6px ${h.color}25`,zIndex:10,
-        }}><div style={{width:activeRisk===h.id?5:3,height:activeRisk===h.id?5:3,borderRadius:"50%",background:h.color}}/></button>
-      ))}
+          boxShadow:isActive?`0 0 12px ${h.color}40`:`0 0 4px ${h.color}20`,zIndex:isActive?11:10,
+          animation:isActive?"pulse 2s ease infinite":"none",
+        }}><div style={{width:isActive?6:3,height:isActive?6:3,borderRadius:"50%",background:h.color,transition:"all 0.3s ease"}}/></button>
+        );
+      })}
       <div style={{display:"flex",justifyContent:"center",gap:"14px",marginTop:"10px"}}>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.crit}/> Critical</div>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.orange}/> Major</div>
