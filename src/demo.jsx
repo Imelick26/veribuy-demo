@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import * as THREE from "three";
 import logoSrc from "./assets/logo.png";
+import broncoSrc from "./assets/bronco.png";
 
 /* ═══ RESPONSIVE HOOK ═══ */
 function useIsMobile(breakpoint = 768) {
@@ -897,8 +898,8 @@ const P6 = ({ mob }) => {
         <div style={{ height: 2, background: B.brand, marginBottom: "20px", ...S(0) }} />
 
         {/* Hero Image */}
-        <div style={{ width: "100%", height: "200px", borderRadius: "8px", overflow: "hidden", marginBottom: "20px", background: `linear-gradient(135deg, #1e0049 0%, #30006b 50%, #46006d 100%)`, position: "relative", ...S(1) }}>
-          <img src="https://images.unsplash.com/photo-1669725621246-6c5e01c2da1a?w=800&q=80" alt="2024 Ford Bronco Sport" style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { e.target.style.display = "none"; }} />
+        <div style={{ width: "100%", height: mob ? "220px" : "200px", borderRadius: "8px", overflow: "hidden", marginBottom: "20px", background: `linear-gradient(135deg, #1e0049 0%, #30006b 50%, #46006d 100%)`, position: "relative", ...S(1) }}>
+          <img src={broncoSrc} alt="2024 Ford Bronco Sport" style={{ width: "100%", height: "100%", objectFit: "contain", objectPosition: "center" }} />
           <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "14px 18px", background: "linear-gradient(transparent, rgba(0,0,0,0.7))" }}>
             <div style={{ fontSize: "17px", fontWeight: 700, color: "#fff" }}>2024 Ford Bronco Sport Base AWD</div>
             <div style={{ fontSize: "11px", color: "rgba(255,255,255,0.8)" }}>VIN: 3FMCR9B60RRE18247 | 21,340 mi | Portland, OR</div>
@@ -990,14 +991,61 @@ const P6 = ({ mob }) => {
 };
 
 /* ═══ PAGE 7: FINAL ═══ */
-const P7 = ({ go, mob }) => (
-  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh", textAlign: "center" }}>
-    <div style={{ width: 56, height: 56, borderRadius: "14px", background: B.brandGrad, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}><Check s={28} c="#fff" /></div>
-    <h1 style={{ fontSize: mob ? "22px" : "30px", fontWeight: 700, color: B.g900, margin: "0 0 12px" }}>The Complete Picture, Before You Buy</h1>
-    <p style={{ fontSize: mob ? "14px" : "16px", color: B.g500, margin: "0 0 36px", maxWidth: "460px", lineHeight: 1.6, padding: mob ? "0 12px" : "0" }}>VeriBuy gives your acquisition team the intelligence they need to make confident, data-backed decisions on every vehicle.</p>
-    <div style={{ display: "flex", gap: "12px", flexDirection: mob ? "column" : "row", width: mob ? "100%" : "auto", padding: mob ? "0 16px" : "0" }}><Btn primary style={mob ? { width: "100%", justifyContent: "center" } : {}}>Request Dealer Pilot</Btn><Btn secondary onClick={() => go(0)} style={mob ? { width: "100%", justifyContent: "center" } : {}}>Restart Demo</Btn></div>
-  </div>
-);
+const P7 = ({ go, mob }) => {
+  const [shieldVisible, setShieldVisible] = useState(false);
+  const [shieldPinned, setShieldPinned] = useState(false);
+  useEffect(() => {
+    const t1 = setTimeout(() => setShieldVisible(true), 800);
+    const t2 = setTimeout(() => setShieldPinned(true), 1600);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+  return (
+    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh", textAlign: "center", background: "linear-gradient(180deg, #1a0035 0%, #2d0060 40%, #3a0080 100%)", borderRadius: "16px", margin: mob ? "-8px -4px" : "-12px -16px", padding: mob ? "40px 16px" : "48px 32px", position: "relative", overflow: "hidden" }}>
+      {/* Subtle radial glow behind the car */}
+      <div style={{ position: "absolute", top: "30%", left: "50%", transform: "translate(-50%, -50%)", width: "600px", height: "400px", background: "radial-gradient(ellipse, rgba(92,0,153,0.3) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+      {/* Bronco image with shield overlay */}
+      <div style={{ position: "relative", marginBottom: "28px", animation: "fadeIn 0.8s ease" }}>
+        <img src={broncoSrc} alt="2024 Ford Bronco Sport" style={{ width: mob ? "280px" : "420px", maxWidth: "90vw", height: "auto", filter: "drop-shadow(0 8px 32px rgba(0,0,0,0.4))" }} />
+        {/* Animated shield that pins to the vehicle */}
+        {shieldVisible && (
+          <div style={{
+            position: "absolute",
+            top: shieldPinned ? (mob ? "10px" : "15px") : "-60px",
+            right: shieldPinned ? (mob ? "10px" : "20px") : "-60px",
+            transition: "all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1)",
+            opacity: shieldVisible ? 1 : 0,
+            transform: shieldPinned ? "scale(1) rotate(0deg)" : "scale(1.5) rotate(-15deg)",
+          }}>
+            <div style={{
+              width: mob ? 52 : 64,
+              height: mob ? 52 : 64,
+              borderRadius: "50%",
+              background: "linear-gradient(135deg, rgba(255,255,255,0.95), rgba(243,236,250,0.95))",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 4px 20px rgba(92,0,153,0.4), 0 0 40px rgba(92,0,153,0.2)",
+              border: "2px solid rgba(255,255,255,0.9)",
+            }}>
+              <img src={logoSrc} alt="Verified" style={{ width: mob ? 34 : 42, height: mob ? 34 : 42, borderRadius: "8px", objectFit: "contain" }} />
+            </div>
+            {shieldPinned && <div style={{ textAlign: "center", marginTop: "4px", animation: "fadeIn 0.5s ease 0.3s both" }}>
+              <span style={{ fontSize: "9px", fontWeight: 700, color: "#fff", textTransform: "uppercase", letterSpacing: "1px", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>Verified</span>
+            </div>}
+          </div>
+        )}
+      </div>
+
+      <h1 style={{ fontSize: mob ? "24px" : "34px", fontWeight: 800, color: "#fff", margin: "0 0 12px", textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>Get Verified to Buy</h1>
+      <p style={{ fontSize: mob ? "14px" : "16px", color: "rgba(255,255,255,0.7)", margin: "0 0 36px", maxWidth: "460px", lineHeight: 1.6, padding: mob ? "0 12px" : "0" }}>VeriBuy gives your acquisition team the intelligence they need to make confident, data-backed decisions on every vehicle.</p>
+      <div style={{ display: "flex", gap: "12px", flexDirection: mob ? "column" : "row", width: mob ? "100%" : "auto", padding: mob ? "0 16px" : "0" }}>
+        <Btn primary style={mob ? { width: "100%", justifyContent: "center" } : {}}>Request Dealer Pilot</Btn>
+        <Btn secondary onClick={() => go(0)} style={{ ...(mob ? { width: "100%", justifyContent: "center" } : {}), background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.25)", color: "#fff" }}>Restart Demo</Btn>
+      </div>
+    </div>
+  );
+};
 
 /* ═══ MAIN APP ═══ */
 const labels = ["Intro","Vehicle ID","Risk Intel","Capture","Findings","Pricing","Report",""];
