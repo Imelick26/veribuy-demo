@@ -145,15 +145,15 @@ function stopBgMusic() {
 /* ═══ TOKENS ═══ */
 const B = {
   brand: "#5C0099", brandH: "#46006d", brandBg: "#F3ECFA", brandBd: "#D4BFE8",
-  brandGrad: "linear-gradient(135deg, #ff4289 0%, #be00a4 50%, #5C0099 100%)",
-  red: "#F83C50", redBg: "#FEF1F2", redBd: "#FCD5D9",
+  brandGrad: "linear-gradient(135deg, #ff4289 0%, #be00a4 40%, #7C3AED 70%, #5C0099 100%)",
+  red: "#EF4444", redBg: "#FEF2F2", redBd: "#FECACA",
   crit: "#B91C1C", critBg: "#FEF2F2", critBd: "#FECACA",
-  orange: "#EA580C", orangeBg: "#FFF7ED", orangeBd: "#FED7AA",
+  orange: "#F97316", orangeBg: "#FFF7ED", orangeBd: "#FDBA74",
   g900: "#111827", g700: "#374151", g500: "#6B7280", g300: "#D1D5DB", g200: "#E5E7EB", g100: "#F3F4F6", g50: "#F9FAFB",
   white: "#FFFFFF", pageBg: "#EEEAF4", black: "#0B0B0C",
-  ok: "#16A34A", okBg: "#F0FDF4", okBd: "#BBF7D0",
-  yn: "#FFFF00", ynBg: "#FEFCBF", ynBd: "#FDE047", ynT: "#0B0B0C",
-  sh: "0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04)",
+  ok: "#22C55E", okBg: "#F0FDF4", okBd: "#86EFAC",
+  yn: "#EAB308", ynBg: "#FEF9C3", ynBd: "#FACC15", ynT: "#713F12",
+  sh: "0 1px 3px rgba(0,0,0,.08),0 2px 8px rgba(0,0,0,.04)",
 };
 
 /* ═══ ICONS ═══ */
@@ -294,13 +294,13 @@ const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
       {id:15, pos:new THREE.Vector3(0.05, 0.85, 1.35),    color:"#16A34A"},   // Filters (top center)
       /* Underbody Front — transmission */
       {id:1,  pos:new THREE.Vector3(0, 0.28, 1.10),       color:"#B91C1C"},   // Transmission (center low front)
-      {id:8,  pos:new THREE.Vector3(0, 0.25, 0.50),       color:"#FFFF00"},   // Shift Calibration (center low mid)
+      {id:8,  pos:new THREE.Vector3(0, 0.25, 0.50),       color:"#EAB308"},   // Shift Calibration (center low mid)
       /* Rear Underbody */
       {id:4,  pos:new THREE.Vector3(0, 0.28, -1.15),      color:"#EA580C"},   // Rear Drive Unit (center low rear)
-      {id:9,  pos:new THREE.Vector3(0.15, 0.30, -0.95),   color:"#FFFF00"},   // EVAP Purge (right rear)
+      {id:9,  pos:new THREE.Vector3(0.15, 0.30, -0.95),   color:"#EAB308"},   // EVAP Purge (right rear)
       /* Wheel Areas */
-      {id:10, pos:new THREE.Vector3(-0.50, 0.32, 0.85),   color:"#FFFF00"},   // Suspension (left front wheel)
-      {id:11, pos:new THREE.Vector3(0.50, 0.30, 0.85),    color:"#FFFF00"},   // Brake Wear (right front wheel)
+      {id:10, pos:new THREE.Vector3(-0.50, 0.32, 0.85),   color:"#EAB308"},   // Suspension (left front wheel)
+      {id:11, pos:new THREE.Vector3(0.50, 0.30, 0.85),    color:"#EAB308"},   // Brake Wear (right front wheel)
       {id:13, pos:new THREE.Vector3(-0.38, 0.58, 1.45),   color:"#16A34A"},   // Driver Assist (left headlight)
       /* Cabin / Dash */
       {id:7,  pos:new THREE.Vector3(0.25, 0.90, -0.05),   color:"#EA580C"},   // BCM (right dash)
@@ -419,7 +419,7 @@ const BroncoModel = ({ activeRisk, onSpotClick, mob }) => {
       <div style={{display:"flex",justifyContent:"center",gap:"14px",marginTop:"10px"}}>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.crit}/> Critical</div>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.orange}/> Major</div>
-        <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c="#FFFF00"/> Moderate</div>
+        <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c="#EAB308"/> Moderate</div>
         <div style={{display:"flex",alignItems:"center",gap:"4px",fontSize:"10px",color:B.g500}}><Dot c={B.ok}/> Minor</div>
       </div>
       <div style={{textAlign:"center",marginTop:"6px",fontSize:"11px",color:B.g500}}>Drag to rotate • Click hotspots to inspect • Auto-rotates</div>
@@ -441,10 +441,10 @@ const risks = [
   { id: 6, sev: "Major", Icon: Circ, c: B.orange, t: "Water Pump Cooling Failure", cost: "$900 – $1,400", what: "The water pump on the 1.5L EcoBoost has a documented failure pattern involving internal bearing degradation and weep hole leakage, typically between 18K and 35K miles.", why: "Water pump failure leads to coolant loss and overheating. Because symptoms overlap with head gasket issues, misdiagnosis is common — increasing the risk of delayed or incorrect repair.", symptoms: ["Dried coolant trail below water pump weep hole", "Engine temperature gauge running higher than normal", "Grinding noise from front of engine at idle", "Coolant puddle under vehicle after parking"] },
   { id: 7, sev: "Major", Icon: Circ, c: B.orange, t: "Battery / BCM Voltage Instability", cost: "$150 – $1,800", what: "The Body Control Module (BCM) in 2021–2024 Bronco Sport models has a known software condition that causes parasitic battery drain, leading to dead batteries after 2–3 days of inactivity.", why: "Voltage instability affects all vehicle electronics and can trigger cascading fault codes. BCM reflash is the first-line fix, but some units require hardware replacement at significantly higher cost.", symptoms: ["Dead battery after sitting 2–3 days unused", "Intermittent electrical glitches or warning lights", "Slow cranking or failure to start", "Battery date code indicating original unit still installed"] },
   /* Level 3 — Moderate */
-  { id: 8, sev: "Moderate", Icon: Wrench, c: B.black, t: "Transmission Shift Calibration", cost: "$0 – $1,200", what: "Some 2021–2024 Bronco Sport units exhibit rough or hesitant shifting behavior that may be related to adaptive transmission calibration drift or software revision gaps.", why: "Shift quality issues reduce driving refinement and can indicate early signs of internal transmission wear. In many cases, a TCM recalibration or software update resolves the behavior.", symptoms: ["Rough or jerky shifts at low speed", "Hesitation between gear changes during acceleration", "Occasional gear hunting on inclines", "Shift behavior that changes with temperature"] },
-  { id: 9, sev: "Moderate", Icon: Wrench, c: B.black, t: "EVAP Purge System Fault", cost: "$250 – $600", what: "The evaporative emissions (EVAP) purge valve and associated hoses on this platform have shown a failure pattern that triggers check engine lights and emissions non-compliance.", why: "EVAP faults cause emissions test failures and can affect fuel system vapor management. While not a drivability concern, unresolved codes complicate resale and dealer certification.", symptoms: ["Check engine light with P0441 or P0455 codes", "Fuel smell near the rear of the vehicle", "Difficulty at fuel pump — nozzle clicks off repeatedly", "Hissing sound from engine bay when opening fuel cap"] },
-  { id: 10, sev: "Moderate", Icon: Wrench, c: B.black, t: "Front or Rear Suspension Wear", cost: "$400 – $900", what: "Bronco Sport suspension components, particularly front strut mounts and rear shock absorbers, show accelerated wear in vehicles used on mixed-surface roads or in regions with poor pavement.", why: "Worn suspension reduces ride quality, affects tire wear patterns, and can mask alignment issues. Components typically degrade progressively, making inspection timing important.", symptoms: ["Clunking noise over bumps from front or rear", "Uneven tire wear on front axle", "Vehicle feels loose or floaty at highway speed", "Visible oil weeping on shock absorber body"] },
-  { id: 11, sev: "Moderate", Icon: Wrench, c: B.black, t: "Brake Pad and Rotor Wear", cost: "$300 – $800", what: "Bronco Sport models in the 20K–30K mile range commonly show accelerated front brake wear due to vehicle weight distribution and regenerative braking calibration on AWD variants.", why: "Brake wear at inspection is a standard cost consideration. Premature wear indicates potential caliper or rotor issues that affect reconditioning estimates.", symptoms: ["Squealing or grinding noise during braking", "Vibration or pulsation in brake pedal", "Visible rotor scoring or uneven pad thickness", "Increased stopping distance compared to expected"] },
+  { id: 8, sev: "Moderate", Icon: Wrench, c: "#EAB308", t: "Transmission Shift Calibration", cost: "$0 – $1,200", what: "Some 2021–2024 Bronco Sport units exhibit rough or hesitant shifting behavior that may be related to adaptive transmission calibration drift or software revision gaps.", why: "Shift quality issues reduce driving refinement and can indicate early signs of internal transmission wear. In many cases, a TCM recalibration or software update resolves the behavior.", symptoms: ["Rough or jerky shifts at low speed", "Hesitation between gear changes during acceleration", "Occasional gear hunting on inclines", "Shift behavior that changes with temperature"] },
+  { id: 9, sev: "Moderate", Icon: Wrench, c: "#EAB308", t: "EVAP Purge System Fault", cost: "$250 – $600", what: "The evaporative emissions (EVAP) purge valve and associated hoses on this platform have shown a failure pattern that triggers check engine lights and emissions non-compliance.", why: "EVAP faults cause emissions test failures and can affect fuel system vapor management. While not a drivability concern, unresolved codes complicate resale and dealer certification.", symptoms: ["Check engine light with P0441 or P0455 codes", "Fuel smell near the rear of the vehicle", "Difficulty at fuel pump — nozzle clicks off repeatedly", "Hissing sound from engine bay when opening fuel cap"] },
+  { id: 10, sev: "Moderate", Icon: Wrench, c: "#EAB308", t: "Front or Rear Suspension Wear", cost: "$400 – $900", what: "Bronco Sport suspension components, particularly front strut mounts and rear shock absorbers, show accelerated wear in vehicles used on mixed-surface roads or in regions with poor pavement.", why: "Worn suspension reduces ride quality, affects tire wear patterns, and can mask alignment issues. Components typically degrade progressively, making inspection timing important.", symptoms: ["Clunking noise over bumps from front or rear", "Uneven tire wear on front axle", "Vehicle feels loose or floaty at highway speed", "Visible oil weeping on shock absorber body"] },
+  { id: 11, sev: "Moderate", Icon: Wrench, c: "#EAB308", t: "Brake Pad and Rotor Wear", cost: "$300 – $800", what: "Bronco Sport models in the 20K–30K mile range commonly show accelerated front brake wear due to vehicle weight distribution and regenerative braking calibration on AWD variants.", why: "Brake wear at inspection is a standard cost consideration. Premature wear indicates potential caliper or rotor issues that affect reconditioning estimates.", symptoms: ["Squealing or grinding noise during braking", "Vibration or pulsation in brake pedal", "Visible rotor scoring or uneven pad thickness", "Increased stopping distance compared to expected"] },
   /* Level 4 — Minor */
   { id: 12, sev: "Minor", Icon: Eye, c: B.ok, t: "SYNC Infotainment Instability", cost: "$0 – $900", what: "The SYNC 3 and SYNC 4 infotainment systems in Bronco Sport models have reported software instability including screen freezes, Bluetooth disconnects, and navigation system lag.", why: "Infotainment issues affect perceived quality and customer satisfaction. Most are resolved via software update, but hardware failures (APIM module) require component replacement.", symptoms: ["Touchscreen freezes or becomes unresponsive", "Bluetooth audio drops or fails to reconnect", "Backup camera display lag or black screen", "System reboot cycle during driving"] },
   { id: 13, sev: "Minor", Icon: Eye, c: B.ok, t: "Driver Assist Sensor Malfunction", cost: "$150 – $500", what: "Forward-facing camera, radar sensors, and blind-spot monitoring modules on this platform can lose calibration or produce false alerts due to sensor contamination or mounting shift.", why: "ADAS sensor faults disable safety features and trigger dashboard warnings. Recalibration is typically required after windshield replacement or front-end work.", symptoms: ["Pre-collision warning activating without cause", "Blind-spot monitor light staying illuminated", "Adaptive cruise control becoming unavailable", "Calibration warning message on instrument cluster"] },
@@ -819,7 +819,7 @@ const P2 = ({ mob }) => {
           </Card>
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: "6px", width: mob ? "100%" : "auto" }}>
-          <Card style={{ padding: "14px 18px", background: "#4B5563", borderColor: "#6B7280", color: B.white }}>
+          <Card style={{ padding: "14px 18px", background: "linear-gradient(135deg, #5C0099, #7C3AED)", borderColor: B.brand, color: B.white }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap" }}>
               <span style={{ fontSize: "14px", fontWeight: 700, color: B.white }}>16 Risk Areas Identified</span>
               <div style={{ display: "flex", gap: "6px", marginLeft: "auto" }}><SevPill sev="Critical" /><SevPill sev="Major" /><SevPill sev="Moderate" /><SevPill sev="Minor" /></div>
@@ -1054,7 +1054,7 @@ const P3 = ({ mob }) => {
 const findings = [
   { sev: "Critical", Icon: Tri, c: B.crit, bg: B.critBg, bd: B.critBd, t: "Head Gasket Compromised", desc: "White milky residue visible on oil filler cap. Coolant reservoir approximately 40% below minimum line. Sweet chemical smell detected from engine bay at operating temperature.", ev: "Visual inspection + Photo evidence", repair: "$2,800 – $4,200", impact: "Structural — affects resale and reliability" },
   { sev: "Major", Icon: Circ, c: B.orange, bg: B.orangeBg, bd: B.orangeBd, t: "Fuel Injector Leak Confirmed", desc: "Wet spot on injector #3 rail seat. Raw fuel smell at cold start confirmed.", ev: "Photo + inspection evidence", repair: "$600 – $1,100", impact: "Safety risk — must be addressed" },
-  { sev: "Moderate", Icon: Eye, c: B.black, bg: B.ynBg, bd: B.ynBd, t: "Driver Seat Tear — Leather Bolster", desc: "1.5-inch tear on driver seat outer bolster. Consistent with entry/exit wear. Not structural but affects perceived condition.", ev: "Photo evidence", repair: "$200 – $350", impact: "Cosmetic — affects retail presentation" },
+  { sev: "Moderate", Icon: Eye, c: "#EAB308", bg: B.ynBg, bd: B.ynBd, t: "Driver Seat Tear — Leather Bolster", desc: "1.5-inch tear on driver seat outer bolster. Consistent with entry/exit wear. Not structural but affects perceived condition.", ev: "Photo evidence", repair: "$200 – $350", impact: "Cosmetic — affects retail presentation" },
 ];
 
 const P4 = ({ mob }) => {
