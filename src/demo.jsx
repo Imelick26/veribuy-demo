@@ -2,6 +2,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import * as THREE from "three";
 import logoSrc from "./assets/logo.png";
 import broncoSrc from "./assets/bronco.png";
+import captureFrontCenter from "./assets/capture-front-center.jpg";
+import captureFront34 from "./assets/capture-front-34.jpg";
 
 /* ═══ RESPONSIVE HOOK ═══ */
 function useIsMobile(breakpoint = 768) {
@@ -625,6 +627,8 @@ const P3 = ({ mob }) => {
         {/* Viewfinder area */}
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: mob ? "0 12px" : "0 24px" }}>
           <div style={{ width: "100%", maxWidth: "480px", aspectRatio: "16/10", background: "rgba(255,255,255,0.03)", borderRadius: "8px", border: `2px solid ${confirmed ? B.ok : aligning ? B.ok : "rgba(255,255,255,0.15)"}`, position: "relative", overflow: "hidden", animation: !aligning && !confirmed ? "borderPulse 2s ease infinite" : "none", transition: "border-color 0.3s ease" }}>
+            {/* Live camera preview image */}
+            {(hudIdx === 0 || hudIdx === 1) && <img src={hudIdx === 0 ? captureFrontCenter : captureFront34} alt="" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", opacity: confirmed ? 1 : 0.85, transition: "all 0.5s ease", animation: !aligning && !confirmed ? "cameraAdjust 3s ease-in-out infinite" : aligning ? "cameraSettle 0.8s ease forwards" : "none" }} />}
             <Corner pos="tl" /><Corner pos="tr" /><Corner pos="bl" /><Corner pos="br" />
             {/* Crosshair */}
             {!aligning && !confirmed && <>
@@ -1030,9 +1034,7 @@ const P7 = ({ go, mob }) => {
             }}>
               <img src={logoSrc} alt="Verified" style={{ width: mob ? 34 : 42, height: mob ? 34 : 42, borderRadius: "8px", objectFit: "contain" }} />
             </div>
-            {shieldPinned && <div style={{ textAlign: "center", marginTop: "4px", animation: "fadeIn 0.5s ease 0.3s both" }}>
-              <span style={{ fontSize: "9px", fontWeight: 700, color: "#fff", textTransform: "uppercase", letterSpacing: "1px", textShadow: "0 1px 4px rgba(0,0,0,0.5)" }}>Verified</span>
-            </div>}
+
           </div>
         )}
       </div>
@@ -1061,7 +1063,7 @@ export default function App() {
   const Cur = STEPS[step];
   return (
     <div style={{ width: "100vw", height: "100vh", background: B.pageBg, fontFamily: "'Inter',system-ui,sans-serif", color: B.g900, display: "flex", flexDirection: "column", overflowX: "hidden" }}>
-      <style>{`@keyframes tc{50%{opacity:0}} @keyframes su{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.6)}} @keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}} @keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}} @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}} @keyframes scanLine{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}} @keyframes borderPulse{0%,100%{border-color:rgba(92,0,153,0.3)}50%{border-color:rgba(92,0,153,1)}} @keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}} @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} [data-hover="card"]{transition:all 0.2s ease} [data-hover="card"]:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1) !important} [data-hover="btn"]{transition:all 0.15s ease} [data-hover="btn"]:hover{transform:translateY(-1px);filter:brightness(1.08)} * {box-sizing:border-box;margin:0;padding:0}`}</style>
+      <style>{`@keyframes tc{50%{opacity:0}} @keyframes su{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}} @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.6)}} @keyframes spin{to{transform:rotate(360deg)}} @keyframes fadeIn{from{opacity:0}to{opacity:1}} @keyframes slideInRight{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:translateX(0)}} @keyframes slideInLeft{from{opacity:0;transform:translateX(-30px)}to{opacity:1;transform:translateX(0)}} @keyframes scaleIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}} @keyframes scanLine{0%{top:0;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:100%;opacity:0}} @keyframes borderPulse{0%,100%{border-color:rgba(92,0,153,0.3)}50%{border-color:rgba(92,0,153,1)}} @keyframes cameraAdjust{0%{transform:scale(1.08) translate(-1%,-1%)}25%{transform:scale(1.06) translate(1%,0.5%)}50%{transform:scale(1.1) translate(0.5%,-0.5%)}75%{transform:scale(1.07) translate(-0.5%,0.8%)}100%{transform:scale(1.08) translate(-1%,-1%)}} @keyframes cameraSettle{from{transform:scale(1.06) translate(0.5%,0.3%)}to{transform:scale(1.02) translate(0,0)}} @keyframes shimmer{from{background-position:-200% 0}to{background-position:200% 0}} @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}} [data-hover="card"]{transition:all 0.2s ease} [data-hover="card"]:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,0.1) !important} [data-hover="btn"]{transition:all 0.15s ease} [data-hover="btn"]:hover{transform:translateY(-1px);filter:brightness(1.08)} * {box-sizing:border-box;margin:0;padding:0}`}</style>
       <header style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: mob ? "10px 14px" : "14px 24px", background: B.white, borderBottom: `1px solid ${B.g200}`, flexShrink: 0, flexWrap: mob ? "wrap" : "nowrap", gap: mob ? "6px" : "0" }}>
         <div style={{ display: "flex", alignItems: "center", gap: mob ? "6px" : "10px" }}>
           <img src={logoSrc} alt="VeriBuy" style={{ width: mob ? 24 : 30, height: mob ? 24 : 30, borderRadius: "8px", objectFit: "contain" }} />
