@@ -183,9 +183,9 @@ function useVoiceoverPilot(nav, step) {
       [73, () => nav(1)],    /* 1:13 — "Everything starts with the VIN" */
       [90, () => nav(2)],    /* 1:30 — "VeriBuy goes beyond a basic VIN report" */
       [150, () => nav(3)],   /* 2:30 — "Now the inspection begins" */
-      [199, () => nav(4)],   /* 3:19 — "Now comes the moment of truth" */
+      [200, () => nav(4)],   /* 3:20 — "Now comes the moment of truth" */
       [255, () => nav(5)],   /* 4:15 — "Now VeriBuy answers the question every buyer cares about" */
-      [319, () => nav(7)],   /* 5:19 — "At first glance, this Bronco Sport" (skip P6 report, go direct to final) */
+      [320, () => nav(7)],   /* 5:20 — "At first glance, this Bronco Sport" (skip P6 report, go direct to final) */
     ];
 
     cues.forEach(([time, fn]) => {
@@ -871,13 +871,13 @@ const P2 = ({ mob }) => {
   useEffect(() => {
     const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
     /* Expand engine coolant tab at 1:58 (28s after P2 mount) */
-    const autoExpand = setTimeout(() => setSel(0), 28000);
+    const autoExpand = setTimeout(() => setSel(0), 24000);
     /* Collapse it at 2:12 (42s after P2 mount) */
-    const autoCollapse = setTimeout(() => setSel(-1), 42000);
+    const autoCollapse = setTimeout(() => setSel(-1), 41000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); clearTimeout(autoCollapse); };
   }, []);
   /* Slow scroll from 42s-60s after mount to show remaining risk areas */
-  useAutoScroll([[43000, 200], [47000, 200], [51000, 250], [55000, 250], [58000, "bottom"]]);
+  useAutoScroll([[42000, 180], [46000, 180], [50000, 200], [54000, 200], [58000, "bottom"]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
@@ -975,7 +975,7 @@ const P3 = ({ mob, voActive }) => {
     /* Auto-capture sequence for voiceover mode */
     /* 8s: open HUD on first shot (camera opens at 2:38 mark) */
     const t1 = setTimeout(() => { setHudIdx(0); setHudActive(true); setAligning(false); setConfirmed(false); }, 8000);
-    /* 10s: trigger first capture — hold steady sequence (~5s per capture) */
+    /* 10s: trigger first capture — hold steady sequence (~8s per capture) */
     const t2 = setTimeout(() => {
       setHoldSteady(true); setSteadyGreen(false);
       setTimeout(() => {
@@ -984,13 +984,13 @@ const P3 = ({ mob, voActive }) => {
           setHoldSteady(false); setSteadyGreen(false);
           playShutter();
           setAligning(true); setScore(0);
-          setTimeout(() => setScore(98), 800);
+          setTimeout(() => setScore(98), 1200);
           setTimeout(() => {
             setAligning(false); setConfirmed(true);
             setCaptured(prev => new Set([...prev, 0]));
             setTimeout(() => {
               setConfirmed(false); setHudIdx(1);
-              /* 2nd capture after brief pause — front 3/4 driver */
+              /* 2nd capture after pause — front 3/4 driver (~8s) */
               setTimeout(() => {
                 setHoldSteady(true); setSteadyGreen(false);
                 setTimeout(() => {
@@ -999,19 +999,19 @@ const P3 = ({ mob, voActive }) => {
                     setHoldSteady(false); setSteadyGreen(false);
                     playShutter();
                     setAligning(true); setScore(0);
-                    setTimeout(() => setScore(96), 800);
+                    setTimeout(() => setScore(96), 1200);
                     setTimeout(() => {
                       setAligning(false); setConfirmed(true);
                       setCaptured(prev => new Set([...prev, 1]));
-                      setTimeout(() => { setConfirmed(false); setHudActive(false); }, 1200);
-                    }, 1400);
-                  }, 800);
-                }, 1200);
-              }, 1500);
-            }, 1000);
-          }, 1400);
-        }, 800);
-      }, 1200);
+                      setTimeout(() => { setConfirmed(false); setHudActive(false); }, 2000);
+                    }, 2200);
+                  }, 1200);
+                }, 2000);
+              }, 2000);
+            }, 1800);
+          }, 2200);
+        }, 1200);
+      }, 2000);
     }, 10000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [voActive]);
@@ -1341,7 +1341,7 @@ const P4 = ({ mob }) => {
 
 /* ═══ PAGE 5: MARKET ANALYSIS ═══ */
 const P5 = ({ mob }) => {
-  useAutoScroll([[15000, 200], [21000, 200], [27000, 200], [33000, 200], [39000, 200], [45000, 200], [51000, 200], [57000, 200], [62000, "bottom"]]);
+  useAutoScroll([[15000, 200], [22000, 200], [29000, 200], [36000, 200], [43000, 200], [50000, 200], [57000, 200], [63000, "bottom"]]);
   return (
   <div style={{ maxWidth: "720px", margin: "0 auto" }}>
     <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
@@ -1542,10 +1542,10 @@ const P7 = ({ go, mob }) => {
   useEffect(() => {
     stopBgMusic();
     /* Shield stamp at 5:39 mark (18s after P7 mounts at 5:21) */
-    const t1 = setTimeout(() => setShieldVisible(true), 13000);
-    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 14000);
+    const t1 = setTimeout(() => setShieldVisible(true), 12000);
+    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 13000);
     /* Title gradient at 5:56 mark (35s after mount) */
-    const t3 = setTimeout(() => setTitleGradient(true), 30000);
+    const t3 = setTimeout(() => setTitleGradient(true), 29000);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
   return (
