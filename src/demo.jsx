@@ -182,7 +182,7 @@ function useVoiceoverPilot(nav, step) {
       /* After story + login + welcome, auto-advance through demo */
       [73, () => nav(1)],    /* 1:13 — "Everything starts with the VIN" */
       [93, () => nav(2)],    /* 1:33 — "VeriBuy goes beyond a basic VIN report" */
-      [151, () => nav(3)],   /* 2:31 — "Now the inspection begins" */
+      [141, () => nav(3)],   /* 2:21 — "Now the inspection begins" */
       [206, () => nav(4)],   /* 3:26 — "Now comes the moment of truth" */
       [261, () => nav(5)],   /* 4:21 — "Now VeriBuy answers the question every buyer cares about" */
       [306, () => nav(6)],   /* 5:06 — Report page */
@@ -872,13 +872,13 @@ const P2 = ({ mob }) => {
   useEffect(() => {
     const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
     /* Expand engine coolant tab at 1:58 (28s after P2 mount) */
-    const autoExpand = setTimeout(() => setSel(0), 19000);
+    const autoExpand = setTimeout(() => setSel(0), 24000);
     /* Collapse it at 2:12 (42s after P2 mount) */
-    const autoCollapse = setTimeout(() => setSel(-1), 39000);
+    const autoCollapse = setTimeout(() => setSel(-1), 41000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); clearTimeout(autoCollapse); };
   }, []);
   /* Slow scroll from 42s-60s after mount to show remaining risk areas */
-  useAutoScroll([[40000, 150], [44000, 150], [48000, 150], [52000, 150], [55000, 150], [57000, "bottom"]]);
+  useAutoScroll([[42000, 200], [44000, 200], [46000, "bottom"]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
@@ -975,7 +975,7 @@ const P3 = ({ mob, voActive }) => {
     autoCaptureRef.current = true;
     /* Auto-capture sequence for voiceover mode */
     /* 8s: open HUD on first shot (camera opens at 2:38 mark) */
-    const t1 = setTimeout(() => { setHudIdx(0); setHudActive(true); setAligning(false); setConfirmed(false); }, 15000);
+    const t1 = setTimeout(() => { setHudIdx(0); setHudActive(true); setAligning(false); setConfirmed(false); }, 25000);
     /* 17s: trigger first capture at 2:48 — hold steady sequence (~8s per capture) */
     const t2 = setTimeout(() => {
       setHoldSteady(true); setSteadyGreen(false);
@@ -1013,7 +1013,7 @@ const P3 = ({ mob, voActive }) => {
           }, 2200);
         }, 1200);
       }, 2000);
-    }, 17000);
+    }, 27000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [voActive]);
   const openHud = (idx) => { setHudIdx(idx >= 0 ? idx : nextUncaptured()); setHudActive(true); setAligning(false); setConfirmed(false); };
