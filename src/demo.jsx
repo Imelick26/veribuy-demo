@@ -180,13 +180,12 @@ function useVoiceoverPilot(nav, step) {
     const cues = [
       /* Story scenes are handled by P0 internal timers */
       /* After story + login + welcome, auto-advance through demo */
-      [65, () => nav(1)],    /* ~1:05 — "Everything starts with the VIN" */
-      [90, () => nav(2)],    /* ~1:30 — "VeriBuy goes beyond a basic VIN report" */
-      [150, () => nav(3)],   /* ~2:30 — "Now the inspection begins" */
-      [200, () => nav(4)],   /* ~3:20 — "Now comes the moment of truth" */
-      [260, () => nav(5)],   /* ~4:20 — "What should you actually pay?" */
-      [305, () => nav(6)],   /* ~5:05 — "All of this rolls into the Verified Report" */
-      [325, () => nav(7)],   /* ~5:25 — "At first glance, this Bronco Sport" */
+      [73, () => nav(1)],    /* 1:13 — "Everything starts with the VIN" */
+      [93, () => nav(2)],    /* 1:33 — "VeriBuy goes beyond a basic VIN report" */
+      [152, () => nav(3)],   /* 2:32 — "Now the inspection begins" */
+      [200, () => nav(4)],   /* 3:20 — "Now comes the moment of truth" */
+      [255, () => nav(5)],   /* 4:15 — "Now VeriBuy answers the question every buyer cares about" */
+      [321, () => nav(7)],   /* 5:21 — "At first glance, this Bronco Sport" (skip P6 report, go direct to final) */
     ];
 
     cues.forEach(([time, fn]) => {
@@ -598,33 +597,33 @@ const P0 = ({ go, mob, startVoiceover }) => {
   /* Story auto-advance: scenes 0-3, then login phases 4-6, then welcome 7 */
   useEffect(() => {
     if (phase === 0 && startedVO) {
-      /* Scene 1: "Every dealership has been there" — narration ~7s */
+      /* Scene 1: "Every dealership has been there" — 0s to 8s */
       const t1 = setTimeout(() => setStoryBeat(1), 2500);
-      const t2 = setTimeout(() => setPhase(1), 7000);
+      const t2 = setTimeout(() => setPhase(1), 8000);
       return () => { clearTimeout(t1); clearTimeout(t2); };
     }
   }, [phase, startedVO]);
   useEffect(() => {
     if (phase === 1) {
-      /* Scene 2: "On the surface, everything checks out" — ~7s */
+      /* Scene 2: "On the surface, everything checks out" — 8s to 15s */
       const t = setTimeout(() => setPhase(2), 7000);
       return () => clearTimeout(t);
     }
   }, [phase]);
   useEffect(() => {
     if (phase === 2) {
-      /* Scene 3: "But then recon starts..." — issues slide in ~2s apart */
-      const t0 = setTimeout(() => setIssueIdx(0), 1200);
-      const t1 = setTimeout(() => setIssueIdx(1), 3200);
-      const t2 = setTimeout(() => setIssueIdx(2), 5200);
-      const t3 = setTimeout(() => setPhase(3), 9500);
+      /* Scene 3: "But then recon starts..." — 15s to 38s, issues slide in */
+      const t0 = setTimeout(() => setIssueIdx(0), 2000);
+      const t1 = setTimeout(() => setIssueIdx(1), 6000);
+      const t2 = setTimeout(() => setIssueIdx(2), 10000);
+      const t3 = setTimeout(() => setPhase(3), 23000);
       return () => { clearTimeout(t0); clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
     }
   }, [phase]);
   useEffect(() => {
     if (phase === 3) {
-      /* Scene 4: "That's the gap VeriBuy was built to solve" — ~14s of narration */
-      const t = setTimeout(() => setPhase(4), 14000);
+      /* Scene 4: "That's the gap VeriBuy was built to solve" — 38s to 49s */
+      const t = setTimeout(() => setPhase(4), 11000);
       return () => clearTimeout(t);
     }
   }, [phase]);
@@ -734,7 +733,7 @@ const P0 = ({ go, mob, startVoiceover }) => {
             Play Demo
           </button>
         )}
-        {phase <= 3 && (phase > 0 || startedVO) && <div style={{ position: "absolute", bottom: mob ? "16px" : "24px", left: "50%", transform: "translateX(-50%)", fontSize: "11px", color: "rgba(255,255,255,0.2)", zIndex: 3, cursor: "pointer" }} onClick={() => setPhase(p => Math.min(p + 1, 4))}>Click to skip →</div>}
+        
       </div>
     );
   }
@@ -874,7 +873,7 @@ const P2 = ({ mob }) => {
     const autoExpand = setTimeout(() => setSel(0), 2800);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); };
   }, []);
-  useAutoScroll([[4000, 200], [10000, 350], [16000, "bottom"]]);
+  useAutoScroll([[3000, 200], [12000, 250], [24000, 250], [36000, 250], [48000, "bottom"]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
@@ -1174,7 +1173,7 @@ const P4 = ({ mob }) => {
     const autoOpen = setTimeout(() => setOpen(0), 2000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoOpen); };
   }, []);
-  useAutoScroll([[3000, 250]]);
+  useAutoScroll([[3000, 200], [10000, 250], [20000, 250], [30000, 250], [40000, "bottom"]]);
   /* Auto-scroll when history is added */
   useEffect(() => {
     if (histAdded) {
@@ -1331,7 +1330,7 @@ const P4 = ({ mob }) => {
 
 /* ═══ PAGE 5: MARKET ANALYSIS ═══ */
 const P5 = ({ mob }) => {
-  useAutoScroll([[3000, 350], [7000, "bottom"]]);
+  useAutoScroll([[3000, 250], [8000, 300], [16000, 300], [24000, 300], [32000, 300], [40000, 300], [48000, 300], [56000, "bottom"]]);
   return (
   <div style={{ maxWidth: "720px", margin: "0 auto" }}>
     <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
@@ -1364,9 +1363,43 @@ const P5 = ({ mob }) => {
         <div style={{ fontSize: "13px", color: B.g500 }}>Based on $24,100 avg retail (clean) minus $4,825 estimated reconditioning.</div>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: mob ? "1fr" : "1fr 1fr 1fr", gap: mob ? "8px" : "12px", marginTop: "16px" }}>
-        <div style={{ padding: "14px", borderRadius: "10px", background: B.okBg, border: `1px solid ${B.okBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.ok, fontWeight: 600, marginBottom: "4px" }}>Strong Buy</div><div style={{ fontSize: "13px", fontWeight: 700 }}>≤ $14,000</div></div>
-        <div style={{ padding: "14px", borderRadius: "10px", background: B.okBg, border: `1px solid ${B.okBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.ok, fontWeight: 600, marginBottom: "4px" }}>Fair Buy</div><div style={{ fontSize: "13px", fontWeight: 700 }}>$14K – $15.3K</div></div>
-        <div style={{ padding: "14px", borderRadius: "10px", background: B.g50, border: `1px solid ${B.g200}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.g500, fontWeight: 600, marginBottom: "4px" }}>Overpaying</div><div style={{ fontSize: "13px", fontWeight: 700 }}>&gt; $15,300</div></div>
+        <div style={{ padding: "14px", borderRadius: "10px", background: B.okBg, border: `1px solid ${B.okBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.ok, fontWeight: 600, marginBottom: "4px" }}>Strong Buy</div><div style={{ fontSize: "13px", fontWeight: 700, color: B.ok }}>≤ $14,000</div></div>
+        <div style={{ padding: "14px", borderRadius: "10px", background: B.ynBg, border: `1px solid ${B.ynBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: "#EAB308", fontWeight: 600, marginBottom: "4px" }}>Fair Buy</div><div style={{ fontSize: "13px", fontWeight: 700, color: "#EAB308" }}>$14K – $15.3K</div></div>
+        <div style={{ padding: "14px", borderRadius: "10px", background: B.critBg, border: `1px solid ${B.critBd}`, textAlign: "center" }}><div style={{ fontSize: "11px", color: B.crit, fontWeight: 600, marginBottom: "4px" }}>Overpaying</div><div style={{ fontSize: "13px", fontWeight: 700, color: B.crit }}>&gt; $15,300</div></div>
+      </div>
+      {/* Market Intelligence Summary — keeps viewer engaged during long voiceover segment */}
+      <div style={{ marginTop: "20px", padding: "20px", borderRadius: "12px", background: "rgba(92,0,153,0.04)", border: "1px solid rgba(92,0,153,0.1)" }}>
+        <div style={{ fontSize: "13px", fontWeight: 700, color: B.brand, marginBottom: "12px", display: "flex", alignItems: "center", gap: "6px" }}><Bar s={14} c={B.brand} /> Negotiation Leverage Points</div>
+        {[
+          ["Head Gasket TSB Documented", "Ford TSB 23-2346 confirms pattern failure in 1.5L EcoBoost — strengthens your negotiation position by $2,800–$4,200.", B.crit],
+          ["Below-Market Condition Score", "Vehicle scores 64/100 vs. segment average of 82/100 — supports a 22% discount from retail asking price.", "#EAB308"],
+          ["Days on Market Advantage", "Average 2024 Bronco Sport sits 34 days. This unit at 47 days — seller motivation increases your leverage.", B.ok],
+        ].map(([t, d, c], i) => (
+          <div key={i} style={{ padding: "14px", borderRadius: "10px", background: "rgba(255,255,255,0.8)", border: "1px solid " + B.g200, marginBottom: i < 2 ? "10px" : "0", animation: "scaleIn 0.4s ease " + (i * 0.15) + "s both" }}>
+            <div style={{ fontSize: "13px", fontWeight: 600, color: c, marginBottom: "4px" }}>{t}</div>
+            <div style={{ fontSize: "12px", color: B.g600, lineHeight: 1.55 }}>{d}</div>
+          </div>
+        ))}
+      </div>
+      {/* Profit Projection */}
+      <div style={{ marginTop: "16px", padding: "20px", borderRadius: "12px", background: B.okBg, border: "1px solid " + B.okBd }}>
+        <div style={{ fontSize: "13px", fontWeight: 700, color: B.ok, marginBottom: "12px" }}>Projected Profit at Recommended Acquisition</div>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+          {[["Acquire At", "$15,275", B.g900], ["Est. Retail After Recon", "$22,400", B.g900], ["Total Recon Cost", "$4,825", B.red], ["Projected Gross Profit", "$2,300", B.ok]].map(([label, val, c], i) => (
+            <div key={i} style={{ padding: "12px", borderRadius: "8px", background: "rgba(255,255,255,0.7)", textAlign: "center" }}>
+              <div style={{ fontSize: "11px", color: B.g500, fontWeight: 600, marginBottom: "2px" }}>{label}</div>
+              <div style={{ fontSize: "16px", fontWeight: 700, color: c }}>{val}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      {/* Bottom line recommendation */}
+      <div style={{ marginTop: "16px", padding: "16px 20px", borderRadius: "12px", background: "linear-gradient(135deg, rgba(92,0,153,0.08), rgba(124,58,237,0.08))", border: "1px solid rgba(92,0,153,0.15)", display: "flex", alignItems: "center", gap: "12px" }}>
+        <div style={{ width: 40, height: 40, borderRadius: "50%", background: B.brand, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}><Check s={20} c="#fff" /></div>
+        <div>
+          <div style={{ fontSize: "13px", fontWeight: 700, color: B.g900 }}>VeriBuy Recommendation: Acquire with Confidence</div>
+          <div style={{ fontSize: "12px", color: B.g600, lineHeight: 1.5, marginTop: "2px" }}>This vehicle represents a strong acquisition opportunity at the recommended price point, with documented issues that provide significant negotiation leverage.</div>
+        </div>
       </div>
     </Card>
   </div>
@@ -1494,11 +1527,15 @@ const P6 = ({ mob }) => {
 const P7 = ({ go, mob }) => {
   const [shieldVisible, setShieldVisible] = useState(false);
   const [shieldPinned, setShieldPinned] = useState(false);
+  const [titleGradient, setTitleGradient] = useState(false);
   useEffect(() => {
     stopBgMusic();
-    const t1 = setTimeout(() => setShieldVisible(true), 800);
-    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 1600);
-    return () => { clearTimeout(t1); clearTimeout(t2); };
+    /* Shield stamp at 5:39 mark (18s after P7 mounts at 5:21) */
+    const t1 = setTimeout(() => setShieldVisible(true), 17000);
+    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 18000);
+    /* Title gradient at 5:56 mark (35s after mount) */
+    const t3 = setTimeout(() => setTitleGradient(true), 35000);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "70vh", textAlign: "center", background: "linear-gradient(180deg, #1a0035 0%, #2d0060 40%, #3a0080 100%)", borderRadius: "16px", margin: mob ? "-8px -4px" : "-12px -16px", padding: mob ? "40px 16px" : "48px 32px", position: "relative", overflow: "hidden" }}>
@@ -1536,11 +1573,11 @@ const P7 = ({ go, mob }) => {
         )}
       </div>
 
-      <h1 style={{ fontSize: mob ? "24px" : "34px", fontWeight: 800, color: "#fff", margin: "0 0 12px", textShadow: "0 2px 8px rgba(0,0,0,0.3)" }}>Get Verified to Buy</h1>
+      <h1 style={{ fontSize: mob ? "24px" : "34px", fontWeight: 800, margin: "0 0 12px", textShadow: "0 2px 8px rgba(0,0,0,0.3)", background: titleGradient ? "linear-gradient(135deg, #FF6B9D, #C850C0, #7C3AED, #4F46E5)" : "none", WebkitBackgroundClip: titleGradient ? "text" : "unset", WebkitTextFillColor: titleGradient ? "transparent" : "#fff", transition: "all 2s ease" }}>Get Verified to Buy</h1>
       <p style={{ fontSize: mob ? "14px" : "16px", color: "rgba(255,255,255,0.7)", margin: "0 0 36px", maxWidth: "460px", lineHeight: 1.6, padding: mob ? "0 12px" : "0" }}>VeriBuy gives your acquisition team the intelligence they need to make confident, data-backed decisions on every vehicle.</p>
-      <div style={{ display: "flex", gap: "12px", flexDirection: mob ? "column" : "row", width: mob ? "100%" : "auto", padding: mob ? "0 16px" : "0" }}>
-        <Btn primary style={mob ? { width: "100%", justifyContent: "center" } : {}}>Request Dealer Pilot</Btn>
-        <Btn secondary onClick={() => go(0)} style={{ ...(mob ? { width: "100%", justifyContent: "center" } : {}), background: "rgba(255,255,255,0.1)", borderColor: "rgba(255,255,255,0.25)", color: "#fff" }}>Restart Demo</Btn>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%", padding: mob ? "0 16px" : "0", position: "relative" }}>
+        <Btn primary style={{ padding: "16px 48px", fontSize: "18px", fontWeight: 700, justifyContent: "center", minWidth: "240px", boxShadow: "0 4px 24px rgba(127,86,217,0.4)" }}>Get Started</Btn>
+        <div onClick={() => go(0)} style={{ position: "fixed", bottom: "20px", right: "24px", fontSize: "12px", color: "rgba(255,255,255,0.4)", cursor: "pointer", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(255,255,255,0.7)"} onMouseLeave={e => e.target.style.color = "rgba(255,255,255,0.4)"}>Re-watch Demo</div>
       </div>
     </div>
   );
