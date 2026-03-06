@@ -182,10 +182,10 @@ function useVoiceoverPilot(nav, step) {
       /* After story + login + welcome, auto-advance through demo */
       [73, () => nav(1)],    /* 1:13 — "Everything starts with the VIN" */
       [90, () => nav(2)],    /* 1:30 — "VeriBuy goes beyond a basic VIN report" */
-      [150, () => nav(3)],   /* 2:30 — "Now the inspection begins" */
+      [151, () => nav(3)],   /* 2:31 — "Now the inspection begins" */
       [200, () => nav(4)],   /* 3:20 — "Now comes the moment of truth" */
-      [255, () => nav(5)],   /* 4:15 — "Now VeriBuy answers the question every buyer cares about" */
-      [320, () => nav(7)],   /* 5:20 — "At first glance, this Bronco Sport" (skip P6 report, go direct to final) */
+      [261, () => nav(5)],   /* 4:21 — "Now VeriBuy answers the question every buyer cares about" */
+      [319, () => nav(7)],   /* 5:19 — "At first glance, this Bronco Sport" (skip P6 report, go direct to final) */
     ];
 
     cues.forEach(([time, fn]) => {
@@ -871,13 +871,13 @@ const P2 = ({ mob }) => {
   useEffect(() => {
     const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
     /* Expand engine coolant tab at 1:58 (28s after P2 mount) */
-    const autoExpand = setTimeout(() => setSel(0), 24000);
+    const autoExpand = setTimeout(() => setSel(0), 22000);
     /* Collapse it at 2:12 (42s after P2 mount) */
-    const autoCollapse = setTimeout(() => setSel(-1), 41000);
+    const autoCollapse = setTimeout(() => setSel(-1), 42000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); clearTimeout(autoCollapse); };
   }, []);
   /* Slow scroll from 42s-60s after mount to show remaining risk areas */
-  useAutoScroll([[42000, 180], [46000, 180], [50000, 200], [54000, 200], [58000, "bottom"]]);
+  useAutoScroll([[43000, 150], [47000, 150], [50000, 150], [53000, 150], [56000, 150], [59000, "bottom"]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
@@ -1184,7 +1184,7 @@ const P4 = ({ mob }) => {
     const autoOpen = setTimeout(() => setOpen(0), 2000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoOpen); };
   }, []);
-  useAutoScroll([[4000, 180], [10000, 180], [16000, 180], [22000, 180], [28000, 180], [34000, 180], [40000, 180], [46000, 180], [52000, "bottom"]]);
+  useAutoScroll([[4000, 160], [10000, 160], [16000, 160], [22000, 160], [28000, 160], [34000, 160], [40000, 160], [46000, 160], [52000, 160], [58000, "bottom"]]);
   /* Auto-scroll when history is added */
   useEffect(() => {
     if (histAdded) {
@@ -1341,7 +1341,7 @@ const P4 = ({ mob }) => {
 
 /* ═══ PAGE 5: MARKET ANALYSIS ═══ */
 const P5 = ({ mob }) => {
-  useAutoScroll([[15000, 200], [22000, 200], [29000, 200], [36000, 200], [43000, 200], [50000, 200], [57000, 200], [63000, "bottom"]]);
+  useAutoScroll([[15000, 180], [21000, 180], [27000, 180], [33000, 180], [39000, 180], [45000, 180], [51000, 180], [56000, "bottom"]]);
   return (
   <div style={{ maxWidth: "720px", margin: "0 auto" }}>
     <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
@@ -1542,10 +1542,10 @@ const P7 = ({ go, mob }) => {
   useEffect(() => {
     stopBgMusic();
     /* Shield stamp at 5:39 mark (18s after P7 mounts at 5:21) */
-    const t1 = setTimeout(() => setShieldVisible(true), 12000);
-    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 13000);
+    const t1 = setTimeout(() => setShieldVisible(true), 13000);
+    const t2 = setTimeout(() => { setShieldPinned(true); playPinSound(); }, 14000);
     /* Title gradient at 5:56 mark (35s after mount) */
-    const t3 = setTimeout(() => setTitleGradient(true), 29000);
+    const t3 = setTimeout(() => setTitleGradient(true), 30000);
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, []);
   return (
