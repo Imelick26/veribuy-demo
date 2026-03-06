@@ -181,11 +181,12 @@ function useVoiceoverPilot(nav, step) {
       /* Story scenes are handled by P0 internal timers */
       /* After story + login + welcome, auto-advance through demo */
       [73, () => nav(1)],    /* 1:13 — "Everything starts with the VIN" */
-      [90, () => nav(2)],    /* 1:30 — "VeriBuy goes beyond a basic VIN report" */
+      [93, () => nav(2)],    /* 1:33 — "VeriBuy goes beyond a basic VIN report" */
       [151, () => nav(3)],   /* 2:31 — "Now the inspection begins" */
-      [200, () => nav(4)],   /* 3:20 — "Now comes the moment of truth" */
+      [206, () => nav(4)],   /* 3:26 — "Now comes the moment of truth" */
       [261, () => nav(5)],   /* 4:21 — "Now VeriBuy answers the question every buyer cares about" */
-      [319, () => nav(7)],   /* 5:19 — "At first glance, this Bronco Sport" (skip P6 report, go direct to final) */
+      [306, () => nav(6)],   /* 5:06 — Report page */
+      [319, () => nav(7)],   /* 5:19 — "At first glance, this Bronco Sport" */
     ];
 
     cues.forEach(([time, fn]) => {
@@ -871,13 +872,13 @@ const P2 = ({ mob }) => {
   useEffect(() => {
     const t = risks.map((_, i) => setTimeout(() => setRev(i + 1), 120 + i * 120));
     /* Expand engine coolant tab at 1:58 (28s after P2 mount) */
-    const autoExpand = setTimeout(() => setSel(0), 22000);
+    const autoExpand = setTimeout(() => setSel(0), 19000);
     /* Collapse it at 2:12 (42s after P2 mount) */
-    const autoCollapse = setTimeout(() => setSel(-1), 42000);
+    const autoCollapse = setTimeout(() => setSel(-1), 39000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoExpand); clearTimeout(autoCollapse); };
   }, []);
   /* Slow scroll from 42s-60s after mount to show remaining risk areas */
-  useAutoScroll([[43000, 150], [47000, 150], [50000, 150], [53000, 150], [56000, 150], [59000, "bottom"]]);
+  useAutoScroll([[40000, 150], [44000, 150], [48000, 150], [52000, 150], [55000, 150], [57000, "bottom"]]);
   return (
     <div style={{ maxWidth: "920px", margin: "0 auto" }}>
       <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Pre-Inspection Intelligence</h2>
@@ -974,8 +975,8 @@ const P3 = ({ mob, voActive }) => {
     autoCaptureRef.current = true;
     /* Auto-capture sequence for voiceover mode */
     /* 8s: open HUD on first shot (camera opens at 2:38 mark) */
-    const t1 = setTimeout(() => { setHudIdx(0); setHudActive(true); setAligning(false); setConfirmed(false); }, 8000);
-    /* 10s: trigger first capture — hold steady sequence (~8s per capture) */
+    const t1 = setTimeout(() => { setHudIdx(0); setHudActive(true); setAligning(false); setConfirmed(false); }, 15000);
+    /* 17s: trigger first capture at 2:48 — hold steady sequence (~8s per capture) */
     const t2 = setTimeout(() => {
       setHoldSteady(true); setSteadyGreen(false);
       setTimeout(() => {
@@ -1012,7 +1013,7 @@ const P3 = ({ mob, voActive }) => {
           }, 2200);
         }, 1200);
       }, 2000);
-    }, 10000);
+    }, 17000);
     return () => { clearTimeout(t1); clearTimeout(t2); };
   }, [voActive]);
   const openHud = (idx) => { setHudIdx(idx >= 0 ? idx : nextUncaptured()); setHudActive(true); setAligning(false); setConfirmed(false); };
@@ -1184,7 +1185,7 @@ const P4 = ({ mob }) => {
     const autoOpen = setTimeout(() => setOpen(0), 2000);
     return () => { t.forEach(clearTimeout); clearTimeout(autoOpen); };
   }, []);
-  useAutoScroll([[4000, 160], [10000, 160], [16000, 160], [22000, 160], [28000, 160], [34000, 160], [40000, 160], [46000, 160], [52000, 160], [58000, "bottom"]]);
+  useAutoScroll([[4000, 160], [10000, 160], [16000, 160], [22000, 160], [28000, 160], [34000, 160], [40000, 160], [46000, 160], [52000, "bottom"]]);
   /* Auto-scroll when history is added */
   useEffect(() => {
     if (histAdded) {
@@ -1341,7 +1342,7 @@ const P4 = ({ mob }) => {
 
 /* ═══ PAGE 5: MARKET ANALYSIS ═══ */
 const P5 = ({ mob }) => {
-  useAutoScroll([[15000, 180], [21000, 180], [27000, 180], [33000, 180], [39000, 180], [45000, 180], [51000, 180], [56000, "bottom"]]);
+  useAutoScroll([[10000, 180], [16000, 180], [22000, 180], [28000, 180], [34000, 180], [40000, 180], [43000, "bottom"]]);
   return (
   <div style={{ maxWidth: "720px", margin: "0 auto" }}>
     <h2 style={{ fontSize: mob ? "18px" : "22px", fontWeight: 700, color: B.g900, margin: "0 0 4px" }}>Market Analysis</h2>
